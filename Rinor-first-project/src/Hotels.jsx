@@ -1,90 +1,202 @@
-import React from 'react';
+import { useMemo } from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-} from '@mui/material';
+  MaterialReactTable,
+  useMaterialReactTable,
+} from 'material-react-table';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+//nested data is ok, see accessorKeys in ColumnDef below
+const data = [
+  {
+    name: {
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    address: '261 Erdman Ford',
+    city: 'East Daphne',
+    state: 'Kentucky',
+  },
+  {
+    name: {
+      firstName: 'Jane',
+      lastName: 'Doe',
+    },
+    address: '769 Dominic Grove',
+    city: 'Columbus',
+    state: 'Ohio',
+  },
+  {
+    name: {
+      firstName: 'Joe',
+      lastName: 'Doe',
+    },
+    address: '566 Brakus Inlet',
+    city: 'South Linda',
+    state: 'West Virginia',
+  },
+  {
+    name: {
+      firstName: 'Kevin',
+      lastName: 'Vandy',
+    },
+    address: '722 Emie Stream',
+    city: 'Lincoln',
+    state: 'Nebraska',
+  },
+  {
+    name: {
+      firstName: 'Joshua',
+      lastName: 'Rolluffs',
+    },
+    address: '32188 Larkin Turnpike',
+    city: 'Charleston',
+    state: 'South Carolina',
+  },
+];
 
 const Hotels = () => {
-  // Sample data for demonstration purposes
-  const hotelData = [
-    {
-      id: 1,
-      name: 'Sample Hotel 1',
-      type: 'Luxury',
-      cityName: 'Cityville',
-      address: '123 Main Street, Cityville',
-      rating: 4.5,
-      rooms: 100,
-    },
-    {
-      id: 2,
-      name: 'Sample Hotel 2',
-      type: 'Budget',
-      cityName: 'Townsville',
-      address: '456 Broad Street, Townsville',
-      rating: 3.8,
-      rooms: 50,
-    },
-    // Add more hotel data as needed
-  ];
-
-  const handleEdit = (id) => {
-    // Handle edit operation
-    console.log(`Edit hotel with ID: ${id}`);
-  };
-
-  const handleDelete = (id) => {
-    // Handle delete operation
-    console.log(`Delete hotel with ID: ${id}`);
-  };
-
-  const handleView = (id) => {
-    // Handle view operation
-    console.log(`View hotel with ID: ${id}`);
-  };
-
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>City</TableCell>
-            <TableCell>Address</TableCell>
-            <TableCell>Rating</TableCell>
-            <TableCell>Rooms</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {hotelData.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.id}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.type}</TableCell>
-              <TableCell>{row.cityName}</TableCell>
-              <TableCell>{row.address}</TableCell>
-              <TableCell>{row.rating}</TableCell>
-              <TableCell>{row.rooms}</TableCell>
-              <TableCell>
-                <Button onClick={() => handleEdit(row.id)} style={{color:'Blue'}}>Edit</Button>
-                <Button onClick={() => handleDelete(row.id)}>Delete</Button>
-                <Button onClick={() => handleView(row.id)}>View</Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name.firstName',
+        header: 'First Name',
+        size: 150,
+        renderCell: (params) => (
+          <div>
+            {params.row.name.firstName}
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              View
+            </Button>
+          </div>
+        ),
+      },
+      // Repeat similar structure for other columns
+      // ...
+      {
+        accessorKey: 'state',
+        header: 'State',
+        size: 150,
+        renderCell: (params) => (
+          <div>
+            {params.row.state}
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              View
+            </Button>
+          </div>
+        ),
+      },
+      // ... (other columns)
+      {
+        accessorKey: 'actions',
+        header: 'Actions',
+        size: 200,
+        renderCell: (params) => (
+          <>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginRight: 8 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginRight: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+            >
+              View
+            </Button>
+          </>
+        ),
+      },
+    ],
+    []
   );
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+  });
+
+  const handleEdit = (row) => {
+    // Handle edit operation
+    console.log('Edit', row);
+  };
+
+  const handleDelete = (row) => {
+    // Handle delete operation
+    console.log('Delete', row);
+  };
+
+  const handleView = (row) => {
+    // Handle view operation
+    console.log('View', row);
+  };
+
+  return <MaterialReactTable table={table} />;
 };
 
 export default Hotels;
