@@ -47,7 +47,7 @@ const Example = () => {
               >
                 <img
                   alt="avatar"
-                  height={30}
+                  height={60}
                   src={row.original.avatar}
                   loading="lazy"
                   style={{ borderRadius: '50%' }}

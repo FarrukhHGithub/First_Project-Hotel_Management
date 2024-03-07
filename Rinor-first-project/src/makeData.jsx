@@ -1,4 +1,4 @@
-
+import LogoImage from "./assets/000.jpg";
 
 export const data = [
   {
@@ -9,9 +9,8 @@ export const data = [
     salary: 52729,
     startDate: '3/20/2014',
     signatureCatchPhrase: 'Cross-platform disintermediate workforce',
-    avatar:
-      'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/106.jpg',
-  },
+    avatar: LogoImage, 
+   },
   {
     firstName: "D'angelo",
     lastName: 'Moen',
@@ -20,8 +19,7 @@ export const data = [
     salary: 71964,
     startDate: '3/9/2018',
     signatureCatchPhrase: 'Virtual local support',
-    avatar:
-      'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/420.jpg',
+    avatar: LogoImage, 
   },
   {
     firstName: 'Devan',
