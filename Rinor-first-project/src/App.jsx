@@ -28,8 +28,8 @@ import Rooms from './Rooms';
 import User from './User';
 import Booking from './Booking';
 import LogoImage from "./assets/logo.png";
-import Login from './Verification/Login'
-import Register from './Verification/Register'
+import LoginForm from './Verification/Login'
+import RegisterForm from './Verification/Register'
 
 
 const drawerWidth = 240;
@@ -176,8 +176,8 @@ export default function PersistentDrawerLeft() {
   <Route path="/hotels" element={<Hotels />} />
   <Route path="/rooms" element={<Rooms />} />
   <Route path="/booking" element={<Booking />} />
-  <Route path="/login" element={<Login />} />
-  <Route path="/register" element={<Register />} />
+  <Route path="/login" element={<LoginForm />} />
+  <Route path="/register" element={<RegisterForm />} />
 </Routes>
 
             </Main>
