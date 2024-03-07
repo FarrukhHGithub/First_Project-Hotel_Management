@@ -1,113 +1,201 @@
-/* eslint-disable react/no-unescaped-entities */
-import  { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Grid, Box, TextField, Button, Modal, Typography } from '@mui/material';
+import { useMemo } from 'react';
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+} from 'material-react-table';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const LoginForm = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    postalcode:'',
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  return (
-    <Grid container justifyContent="center">
-      <Grid item xs={12} sm={8} md={6} lg={4}>
-        <Box sx={{ marginTop: 4 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            User Identity
-          </Typography>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              label="Username"
+//nested data is ok, see accessorKeys in ColumnDef below
+const data = [
+  {
+    name: {
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    address: '261 Erdman Ford',
+    city: 'East Daphne',
+    state: 'Kentucky',
+  },
+  {
+    name: {
+      firstName: 'Jane',
+      lastName: 'Doe',
+    },
+    address: '769 Dominic Grove',
+    city: 'Columbus',
+    state: 'Ohio',
+  },
+  {
+    name: {
+      firstName: 'Joe',
+      lastName: 'Doe',
+    },
+    address: '566 Brakus Inlet',
+    city: 'South Linda',
+    state: 'West Virginia',
+  },
+  {
+    name: {
+      firstName: 'Kevin',
+      lastName: 'Vandy',
+    },
+    address: '722 Emie Stream',
+    city: 'Lincoln',
+    state: 'Nebraska',
+  },
+  {
+    name: {
+      firstName: 'Joshua',
+      lastName: 'Rolluffs',
+    },
+    address: '32188 Larkin Turnpike',
+    city: 'Charleston',
+    state: 'South Carolina',
+  },
+];
+const Rooms = () => {
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name.firstName',
+        header: 'First Name',
+        size: 150,
+        renderCell: (params) => (
+          <div>
+            {params.row.name.firstName}
+            <Button
               variant="outlined"
-              fullWidth
-              size="small"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              margin="normal"
-            />
-            <TextField
-              label="Email"
-              variant="outlined"
-              fullWidth
-              size="small"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              margin="normal"
-            />
-            <TextField
-              label="Password"
-              variant="outlined"
-              fullWidth
-              size="small"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              margin="normal"
-            />
-              <TextField
-              label="Postal-code"
-              variant="outlined"
-              fullWidth
-              size="small"
-              name="postalcode"
-              value={formData.postalcode}
-              onChange={handleChange}
-              margin="normal"
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: 2 }}>
-              Submit
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
             </Button>
-            {/* <Typography variant="body1" sx={{ marginTop: 2 }} align="center">
-              Don't have an account? <Link to="/register">Register here</Link>
-            </Typography> */}
-          </form>
-        </Box>
-      </Grid>
-      <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4, maxWidth: '80%' }}>
-          <Typography variant="h5" gutterBottom>
-            Submitted Data
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Username: {formData.username}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Email: {formData.email}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Password: {formData.password}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Postal Code: {formData.postalcode}
-          </Typography>
-        </Box>
-      </Modal>
-    </Grid>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              View
+            </Button>
+          </div>
+        ),
+      },
+      // Repeat similar structure for other columns
+      // ...
+      {
+        accessorKey: 'state',
+        header: 'State',
+        size: 150,
+        renderCell: (params) => (
+          <div>
+            {params.row.state}
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+              style={{ marginLeft: 8 }}
+            >
+              View
+            </Button>
+          </div>
+        ),
+      },
+      // ... (other columns)
+      {
+        accessorKey: 'actions',
+        header: 'Actions',
+        size: 200,
+        renderCell: (params) => (
+          <>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => handleEdit(params.row)}
+              style={{ marginRight: 8 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDelete(params.row)}
+              style={{ marginRight: 8 }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              startIcon={<VisibilityIcon />}
+              onClick={() => handleView(params.row)}
+            >
+              View
+            </Button>
+          </>
+        ),
+      },
+    ],
+    []
   );
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+  });
+
+  const handleEdit = (row) => {
+    // Handle edit operation
+    console.log('Edit', row);
+  };
+
+  const handleDelete = (row) => {
+    // Handle delete operation
+    console.log('Delete', row);
+  };
+
+  const handleView = (row) => {
+    // Handle view operation
+    console.log('View', row);
+  };
+
+  return <MaterialReactTable table={table} />;
 };
 
-export default LoginForm;
+export default Rooms;

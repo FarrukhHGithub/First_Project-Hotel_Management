@@ -18,6 +18,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import Button from '@mui/material/Button';
+
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
 import Dashboard from './Dashboard';
@@ -26,6 +28,9 @@ import Rooms from './Rooms';
 import User from './User';
 import Booking from './Booking';
 import LogoImage from "./assets/logo.png";
+import Login from './Verification/Login'
+import Register from './Verification/Register'
+
 
 const drawerWidth = 240;
 
@@ -91,7 +96,6 @@ export default function PersistentDrawerLeft() {
       <React.Fragment>
         <div>
           <Box sx={{ display: 'flex' }}>
-            
             <CssBaseline />
             <AppBar position="fixed" open={open}>
               <Toolbar>
@@ -105,8 +109,26 @@ export default function PersistentDrawerLeft() {
                   <MenuIcon />
                 </IconButton>
                 <Typography variant="h4">
-               <img src={LogoImage} alt="Logo" style={{ justifyContent: 'flex-start', height:60, width:150, marginRight:8 }} />
+                  <img src={LogoImage} alt="Logo" style={{ justifyContent: 'flex-start', height: 60, width: 150, marginRight: 8 }} />
                 </Typography>
+                <div style={{ marginLeft: 'auto' }}>
+                <Button
+  color="inherit"
+  component={Link}
+  to="/login"
+  sx={{ '&:hover': { backgroundColor: 'yellow', color: 'black' } }}
+>
+  Login
+</Button>
+<Button
+  color="inherit"
+  component={Link}
+  to="/register"
+  sx={{ '&:hover': { backgroundColor: 'yellow', color: 'black' } }}
+>
+  Register
+</Button>
+                </div>
               </Toolbar>
             </AppBar>
             <Drawer
@@ -154,6 +176,8 @@ export default function PersistentDrawerLeft() {
   <Route path="/hotels" element={<Hotels />} />
   <Route path="/rooms" element={<Rooms />} />
   <Route path="/booking" element={<Booking />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
 </Routes>
 
             </Main>
