@@ -1,32 +1,37 @@
 /* eslint-disable react/no-unescaped-entities */
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Grid, Box, TextField, Button, Modal, Typography } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const RegisterForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    lastName: '',
-    Country: '',
-    cityname:' ',
-  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+  // Validation schema using Yup
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
+    lastName: Yup.string().required('Last Name is required'),
+    country: Yup.string().required('Country is required'),
+    cityname: Yup.string().required('City Name is required'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
+  });
+
+  // Initial form values
+  const initialValues = {
+    name: '',
+    lastName: '',
+    country: '',
+    cityname: '',
+    email: '',
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      setIsModalOpen(true);
+    },
+  });
 
   return (
     <Grid container justifyContent="center">
@@ -35,25 +40,31 @@ const RegisterForm = () => {
           <Typography variant="h4" align="center" gutterBottom>
             Register Form
           </Typography>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={formik.handleSubmit}>
             <TextField
               label="Name"
               variant="outlined"
               fullWidth
               size="small"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
               margin="normal"
             />
             <TextField
-              label="last-Name"
+              label="Last Name"
               variant="outlined"
               fullWidth
               size="small"
               name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
+              value={formik.values.lastName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+              helperText={formik.touched.lastName && formik.errors.lastName}
               margin="normal"
             />
             <TextField
@@ -61,48 +72,67 @@ const RegisterForm = () => {
               variant="outlined"
               fullWidth
               size="small"
-              type="Country"
               name="country"
-              value={formData.country}
-              onChange={handleChange}
+              value={formik.values.country}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.country && Boolean(formik.errors.country)}
+              helperText={formik.touched.country && formik.errors.country}
               margin="normal"
             />
-             <TextField
-              label="City-Name"
+            <TextField
+              label="City Name"
               variant="outlined"
               fullWidth
               size="small"
-              type="Cityname"
               name="cityname"
-              value={formData.cityName}
-              onChange={handleChange}
+              value={formik.values.cityname}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.cityname && Boolean(formik.errors.cityname)}
+              helperText={formik.touched.cityname && formik.errors.cityname}
               margin="normal"
             />
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              size="small"
+              name="email"
+              type="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              margin="normal"
+            />
+
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: 2 }}>
               Submit
             </Button>
-            {/* <Typography variant="body1" sx={{ marginTop: 2 }} align="center">
-              Don't have an account? <Link to="/register">Register here</Link>
-            </Typography> */}
           </form>
         </Box>
       </Grid>
-      <Modal open={isModalOpen} onClose={handleCloseModal}>
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4, maxWidth: '80%' }}>
           <Typography variant="h5" gutterBottom>
             Submitted Data
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Name: {formData.name}
+            Name: {formik.values.name}
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Last Name: {formData.lastName}
+            Last Name: {formik.values.lastName}
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Country: {formData.country}
+            Country: {formik.values.country}
           </Typography>
           <Typography variant="body1" gutterBottom>
-            City Name: {formData.cityname}
+            City Name: {formik.values.cityname}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Email: {formik.values.email}
           </Typography>
         </Box>
       </Modal>

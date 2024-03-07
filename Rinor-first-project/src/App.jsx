@@ -16,9 +16,14 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+// import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Button from '@mui/material/Button';
+// import InboxIcon from '@mui/icons-material/MoveToInbox';
+import Person4Icon from '@mui/icons-material/Person4';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import HotelIcon from '@mui/icons-material/Hotel';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
@@ -152,11 +157,11 @@ export default function PersistentDrawerLeft() {
               <Divider />
               <List>
                 {[
-                  { text: 'Dashboard', icon: <InboxIcon />, path: '/dashboard' },
-                  { text: 'User', icon: <MailIcon />, path: '/user' },
-                  { text: 'Hotels', icon: <InboxIcon />, path: '/hotels' },
-                  { text: 'Rooms', icon: <MailIcon />, path: '/rooms' },
-                  { text: 'Booking', icon: <InboxIcon />, path: '/booking' },
+                  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+                  { text: 'User', icon: <Person4Icon />, path: '/user' },
+                  { text: 'Hotels', icon: <HotelIcon />, path: '/hotels' },
+                  { text: 'Rooms', icon:<MeetingRoomIcon />, path: '/rooms' },
+                  { text: 'Booking', icon: <EventAvailableIcon />, path: '/booking' },
                 ].map((item) => (
                   <ListItem key={item.text} disablePadding>
                     <ListItemButton component={Link} to={item.path}>

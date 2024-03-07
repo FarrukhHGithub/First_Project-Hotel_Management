@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-// Import the hotelData array
 
 //MRT Imports
 import {
@@ -23,21 +22,20 @@ import {
 import { AccountCircle, Send } from '@mui/icons-material';
 
 //Mock Data
+import { data } from './makeData';
 
 
-// ...
-import  hotelData  from './HotelData';  
 const Example = () => {
   const columns = useMemo(
     () => [
       {
-        id: 'employee',
-        header: 'Employee',
+        id: 'Hotel', //id used to define `group` column
+        header: 'Hotels',
         columns: [
           {
-            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-            id: 'name',
-            header: 'Name',
+            accessorFn: (row) => `${row.name} ${row.name}`, //accessorFn used to join multiple data into a single cell
+            id: 'Hotel', //id is still required when using accessorFn instead of accessorKey
+            header: 'Hotel',
             size: 250,
             Cell: ({ renderedCellValue, row }) => (
               <Box
@@ -54,36 +52,40 @@ const Example = () => {
                   loading="lazy"
                   style={{ borderRadius: '50%' }}
                 />
+                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: 'email',
+            accessorKey: ' Hotel Type', //accessorKey used to define `data` column. `id` gets set to accessorKey automatically
             enableClickToCopy: true,
             filterVariant: 'autocomplete',
-            header: 'Email',
+            header: ' Hotel Type',
             size: 300,
           },
         ],
       },
       {
-        id: 'id',
-        header: 'Job Info',
-        columns: [
+        id: 'Hotel Management System',
+        header: 'Hotel Management System',
+        columns: 
+      [
           {
-            accessorKey: 'salary',
+            accessorKey: 'City',
+            // filterVariant: 'range', //if not using filter modes feature, use this instead of filterFn
             filterFn: 'between',
-            header: 'Salary',
+            header: 'City',
             size: 200,
+            //custom conditional format and styling
             Cell: ({ cell }) => (
               <Box
                 component="span"
                 sx={(theme) => ({
                   backgroundColor:
-                    cell.getValue() < 50000
+                    cell.getValue() < 50_000
                       ? theme.palette.error.dark
-                      : cell.getValue() >= 50000 && cell.getValue() < 75000
+                      : cell.getValue() >= 50_000 && cell.getValue() < 75_000
                         ? theme.palette.warning.dark
                         : theme.palette.success.dark,
                   borderRadius: '0.25rem',
@@ -102,45 +104,24 @@ const Example = () => {
             ),
           },
           {
-            accessorKey: 'jobTitle',
-            header: 'Job Title',
+            accessorKey: 'Address', //hey a simple column for once
+            header: 'Address',
             size: 350,
           },
           {
-            accessorFn: (row) => new Date(row.startDate),
-            id: 'startDate',
-            header: 'Start Date',
-            filterVariant: 'date',
-            filterFn: 'lessThan',
-            sortingFn: 'datetime',
-            Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-            Header: ({ column }) => <em>{column.columnDef.header}</em>,
+            accessorFn: (row) => new Date(row.startDate), //convert to Date for sorting and filtering
+            id: 'Describtion',
+            header: 'Describtion',
+            // filterVariant: 'date',
+            // filterFn: 'lessThan',
+            // sortingFn: 'datetime',
+            Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(), //render Date as a string
+            Header: ({ column }) => <em>{column.columnDef.header}</em>, //custom header markup
             muiFilterTextFieldProps: {
               sx: {
                 minWidth: '250px',
               },
             },
-          },
-        ],
-      },
-      {
-        id: 'hotel',
-        header: 'Hotel Info',
-        columns: [
-          {
-            accessorKey: 'hotelName',
-            header: 'Hotel Name',
-            size: 250,
-          },
-          {
-            accessorKey: 'hotelRating',
-            header: 'Rating',
-            size: 150,
-          },
-          {
-            accessorKey: 'price',
-            header: 'Price',
-            size: 150,
           },
         ],
       },
@@ -150,7 +131,7 @@ const Example = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: hotelData,
+    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -263,6 +244,7 @@ const Example = () => {
           })}
         >
           <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* import MRT sub-components */}
             <MRT_GlobalFilterTextField table={table} />
             <MRT_ToggleFiltersButton table={table} />
           </Box>
@@ -301,15 +283,16 @@ const Example = () => {
 
   return <MaterialReactTable table={table} />;
 };
+
 //Date Picker Imports - these should just be in your Context Provider
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-const Hotels = () => (
+const ExampleWithLocalizationProvider = () => (
   //App.tsx or AppProviders file
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Example />
   </LocalizationProvider>
 );
 
-export default Hotels;
+export default ExampleWithLocalizationProvider;
