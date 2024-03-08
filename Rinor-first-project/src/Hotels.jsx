@@ -14,20 +14,8 @@ import {
 import {
   Button,
 } from '@mui/material';
-// import {
-//   Box,
-//   Button,
-//   Dialog,
-//   DialogContent,
-//   DialogTitle,
-//   TextField,
-// } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
-
 // Icons Imports
-// import { Edit, Delete } from '@mui/icons-material';
-
-
 // Users Data
 import { data } from './makeData';
 
@@ -169,12 +157,15 @@ const Hotels = () => {
       </MenuItem>,
       <MenuItem
         key="delete"
-        onClick={() => {
-          console.log("Delete Clicked");
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach(row => table.deleteRow(row.id));
-          closeMenu();
-        }}
+       onClick={() => {
+  const selectedRows = table.getSelectedRowModel().flatRows;
+  selectedRows.forEach(row => {
+    // Perform the desired action, e.g., deleting the row
+    table.deleteRow(row.id);
+  });
+  // Close the menu after performing the action
+  closeMenu();
+}}
         sx={{ m: 0 }}
       >
         <ListItemIcon>

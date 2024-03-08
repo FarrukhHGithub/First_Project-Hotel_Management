@@ -1,175 +1,88 @@
 import { useMemo } from 'react';
+// MRT Imports
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table';
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
-//nested data is ok, see accessorKeys in ColumnDef below
-const data = [
-  {
-    name: {
-      firstName: 'John',
-      lastName: 'Doe',
-    },
-    address: '261 Erdman Ford',
-    city: 'East Daphne',
-    state: 'Kentucky',
-  },
-  {
-    name: {
-      firstName: 'Jane',
-      lastName: 'Doe',
-    },
-    address: '769 Dominic Grove',
-    city: 'Columbus',
-    state: 'Ohio',
-  },
-  {
-    name: {
-      firstName: 'Joe',
-      lastName: 'Doe',
-    },
-    address: '566 Brakus Inlet',
-    city: 'South Linda',
-    state: 'West Virginia',
-  },
-  {
-    name: {
-      firstName: 'Kevin',
-      lastName: 'Vandy',
-    },
-    address: '722 Emie Stream',
-    city: 'Lincoln',
-    state: 'Nebraska',
-  },
-  {
-    name: {
-      firstName: 'Joshua',
-      lastName: 'Rolluffs',
-    },
-    address: '32188 Larkin Turnpike',
-    city: 'Charleston',
-    state: 'South Carolina',
-  },
-];
-const Rooms = () => {
+// Material UI Imports
+import {
+  Box,
+  ListItemIcon,
+  MenuItem,
+} from '@mui/material';
+import {
+  Button,
+} from '@mui/material';
+import { Edit, Delete, Add } from '@mui/icons-material';
+// Icons Imports
+// Users Data
+import { data } from './makeData';
+
+const User = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'name.firstName',
-        header: 'First Name',
-        size: 150,
-        renderCell: (params) => (
-          <div>
-            {params.row.name.firstName}
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EditIcon />}
-              onClick={() => handleEdit(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={() => handleDelete(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="outlined"
-              color="info"
-              startIcon={<VisibilityIcon />}
-              onClick={() => handleView(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              View
-            </Button>
-          </div>
-        ),
-      },
-      // Repeat similar structure for other columns
-      // ...
-      {
-        accessorKey: 'state',
-        header: 'State',
-        size: 150,
-        renderCell: (params) => (
-          <div>
-            {params.row.state}
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EditIcon />}
-              onClick={() => handleEdit(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={() => handleDelete(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="outlined"
-              color="info"
-              startIcon={<VisibilityIcon />}
-              onClick={() => handleView(params.row)}
-              style={{ marginLeft: 8 }}
-            >
-              View
-            </Button>
-          </div>
-        ),
-      },
-      // ... (other columns)
-      {
-        accessorKey: 'actions',
-        header: 'Actions',
-        size: 200,
-        renderCell: (params) => (
-          <>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EditIcon />}
-              onClick={() => handleEdit(params.row)}
-              style={{ marginRight: 8 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={() => handleDelete(params.row)}
-              style={{ marginRight: 8 }}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="outlined"
-              color="info"
-              startIcon={<VisibilityIcon />}
-              onClick={() => handleView(params.row)}
-            >
-              View
-            </Button>
-          </>
-        ),
+        id: 'users', // id used to define `group` column
+        header: 'Users',
+        columns: [
+          {
+            accessorFn: (row) => `${row.firstName} ${row.lastName}`, // accessorFn used to join multiple data into a single cell
+            id: 'name', // id is still required when using accessorFn instead of accessorKey
+            header: 'Name',
+            size: 250,
+            Cell: ({ renderedCellValue, row }) => (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                }}
+              >
+                <img
+                  alt="avatar"
+                  height={30}
+                  src={row.original.avatar}
+                  loading="lazy"
+                  style={{ borderRadius: '50%' }}
+                />
+                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
+                <span>{renderedCellValue}</span>
+              </Box>
+            ),
+          },
+          {
+            accessorKey: 'username', // Added column for username
+            header: 'Username',
+            size: 200, // Adjust size as needed
+          },
+          {
+            accessorKey: 'email', // accessorKey used to define `data` column. `id` gets set to accessorKey automatically
+            enableClickToCopy: true,
+            filterVariant: 'autocomplete',
+            header: 'Email',
+            size: 350,
+          },
+          {
+            accessorKey: 'isAdmin', // Added column for isAdmin
+            header: 'Is Admin',
+            size: 100, // Adjust size as needed
+            Cell: ({ cell }) => (
+              <Box
+                component="span"
+                sx={(theme) => ({
+                  backgroundColor: cell.getValue() ? theme.palette.success.main : theme.palette.error.main,
+                  color: '#fff',
+                  borderRadius: '0.25rem',
+                  padding: '0.25rem',
+                  fontWeight: 'bold',
+                })}
+              >
+                {cell.getValue() ? 'Yes' : 'No'}
+              </Box>
+            ),
+          },
+        ],
       },
     ],
     []
@@ -177,25 +90,111 @@ const Rooms = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      showColumnFilters: false,
+      showGlobalFilter: true,
+      columnPinning: {
+        left: ['mrt-row-expand', 'mrt-row-select'],
+        right: ['mrt-row-actions'],
+      },
+    },
+    paginationDisplayMode: 'pages',
+    positionToolbarAlertBanner: 'bottom',
+    muiSearchTextFieldProps: {
+      size: 'small',
+      variant: 'outlined',
+    },
+    muiPaginationProps: {
+      color: 'secondary',
+      rowsPerPageOptions: [5, 10, 15, 20, 25, 30],
+      shape: 'rounded',
+      variant: 'outlined',
+    },
+    renderDetailPanel: ({ row }) => (
+      <Box
+        sx={{
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'space-around',
+        left: '30px',
+        maxWidth: '1000px',
+        position: 'sticky',
+        width: '100%',
+        }}
+      >
+        <img
+          alt="avatar"
+          height={200}
+          src={row.original.avatar}
+          loading="lazy"
+          style={{ borderRadius: '50%' }}
+        />
+      </Box>
+    ),
+    renderRowActionMenuItems: ({ closeMenu, table }) => [
+      <MenuItem
+        key="edit"
+        onClick={() => {
+          console.log("Edit Clicked");
+          const selectedRows = table.getSelectedRowModel().flatRows;
+          selectedRows.forEach(row => table.editRow(row.id));
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <Edit />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
+      <MenuItem
+        key="delete"
+        onClick={() => {
+          const selectedRows = table.getSelectedRowModel().flatRows;
+          selectedRows.forEach(row => {
+            // Perform the desired action, e.g., deleting the row
+            table.deleteRow(row.id);
+          });
+          // Close the menu after performing the action
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <Delete />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
   });
 
-  const handleEdit = (row) => {
-    // Handle edit operation
-    console.log('Edit', row);
-  };
-
-  const handleDelete = (row) => {
-    // Handle delete operation
-    console.log('Delete', row);
-  };
-
-  const handleView = (row) => {
-    // Handle view operation
-    console.log('View', row);
-  };
-
-  return <MaterialReactTable table={table} />;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ mb: 2, textAlign: 'right' }}>
+        {/* Create button */}
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={() => {
+            // Add your logic for creating a new table or handling the create action
+            console.log("Create Clicked");
+          }}
+        >
+          Create
+        </Button>
+      </Box>
+      <MaterialReactTable table={table} />
+    </Box>
+  );
 };
 
-export default Rooms;
+export default User;
