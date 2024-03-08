@@ -11,9 +11,21 @@ import {
   ListItemIcon,
   MenuItem,
 } from '@mui/material';
+import {
+  Button,
+} from '@mui/material';
+// import {
+//   Box,
+//   Button,
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   TextField,
+// } from '@mui/material';
+import { Edit, Delete, Add } from '@mui/icons-material';
 
 // Icons Imports
-import { Edit, Delete } from '@mui/icons-material';
+// import { Edit, Delete } from '@mui/icons-material';
 
 
 // Users Data
@@ -143,7 +155,9 @@ const Hotels = () => {
       <MenuItem
         key="edit"
         onClick={() => {
-          // Edit logic...
+          console.log("Edit Clicked");
+          const selectedRows = table.getSelectedRowModel().flatRows;
+          selectedRows.forEach(row => table.editRow(row.id));
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -156,6 +170,7 @@ const Hotels = () => {
       <MenuItem
         key="delete"
         onClick={() => {
+          console.log("Delete Clicked");
           const selectedRows = table.getSelectedRowModel().flatRows;
           selectedRows.forEach(row => table.deleteRow(row.id));
           closeMenu();
@@ -170,7 +185,25 @@ const Hotels = () => {
     ],
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ mb: 2, textAlign: 'right' }}>
+        {/* Create button */}
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={() => {
+            // Add your logic for creating a new table or handling the create action
+            console.log("Create Clicked");
+          }}
+        >
+          Create
+        </Button>
+      </Box>
+      <MaterialReactTable table={table} />
+    </Box>
+  );
 };
 
 export default Hotels;
