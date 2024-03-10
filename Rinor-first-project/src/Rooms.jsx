@@ -1,46 +1,122 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import React, { useState, useMemo } from 'react';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import {
   Box,
   Button,
   ListItemIcon,
   MenuItem,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  Modal,
   TextField,
 } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
-import { useMemo } from 'react';
-import {
-  MaterialReactTable,
-  useMaterialReactTable,
-} from 'material-react-table';
-import { data } from './makeData';
+import { data } from './HotelData';
 
-const validationSchema = yup.object({
-  firstName: yup.string().required('First Name is required'),
-  lastName: yup.string().required('Last Name is required'),
-  email: yup.string().email('Invalid email').required('Email is required'),
-  avatar: yup.string().url('Invalid URL').required('Avatar URL is required'),
-  isAdmin: yup.boolean(),
-});
+const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
+  const [hotelData, setHotelData] = useState({
+    name: '',
+    type: '',
+    city: '',
+    avatar: '',
+    address: '',
+    title: '',
+    description: '',
+    rating: '',
+    rooms: '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setHotelData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleAddHotel = () => {
+    onAddHotel(hotelData);
+    onClose();
+  };
+
+  return (
+    <Modal open={isOpen} onClose={onClose}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          p: 2,
+        }}
+      >
+        <h2>Add new Room</h2>
+         <TextField
+          label="Title"
+          name="title"
+          value={hotelData.title}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+        />
+           <TextField
+          label="Price"
+          name="price"
+          value={hotelData.price}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+        />
+        <TextField
+          label="Max-People"
+          name="maxPeople"
+          value={hotelData.maxPeople}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+          />
+        <TextField
+          label="Description"
+          name="description"
+          value={hotelData.description}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+          />
+           <TextField
+          label="Room-Number"
+          name="roomNumber"
+          value={hotelData.roomNumber}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+          />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={handleAddHotel}
+        >
+          Add New Rooms
+        </Button>
+      </Box>
+    </Modal>
+  );
+};
 
 const Rooms = () => {
   const columns = useMemo(
     () => [
       {
-        id: 'users',
-        header: 'Users',
+        id: 'Rooms',
+        header: 'Rooms',
         columns: [
           {
-            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-            id: 'name',
-            header: 'Name',
-            size: 250,
+            accessorFn: (row) => row.hotelName,
+            id: 'title',
+            header: 'title',
+            size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
                 sx={{
@@ -49,49 +125,51 @@ const Rooms = () => {
                   gap: '1rem',
                 }}
               >
-                <img
-                  alt="avatar"
+                {/* <img
+                  alt="Room-Photos"
                   height={30}
-                  src={row.original.avatar}
+                  src={row.original.photo}
                   loading="lazy"
                   style={{ borderRadius: '50%' }}
-                />
+                /> */}
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: 'username',
-            header: 'Username',
+            accessorKey: 'title',
+            header: 'title',
+            size: 150,
+          },
+          {
+            accessorKey: 'price',
+            enableClickToCopy: true,
+            filterVariant: 'autocomplete',
+            header: 'price',
+            size: 180,
+          },
+          {
+            accessorKey: 'maxPeople',
+            header: 'maxPeople',
+            Cell: ({ row }) => (
+              <img
+                alt="avatar"
+                height={50}
+                src={row.original.avatar}
+                loading="lazy"
+                style={{ borderRadius: '5px' }}
+              />
+            ),
+          },
+          {
+            accessorKey: 'description',
+            header: 'description',
             size: 200,
           },
           {
-            accessorKey: 'email',
-            enableClickToCopy: true,
-            filterVariant: 'autocomplete',
-            header: 'Email',
-            size: 350,
-          },
-          {
-            accessorKey: 'isAdmin',
-            header: 'Is Admin',
+            accessorKey: 'roomNumber',
+            header: 'roomNumber',
             size: 100,
-            Cell: ({ cell }) => (
-              <Box
-                component="span"
-                sx={(theme) => ({
-                  backgroundColor: cell.getValue()
-                    ? theme.palette.success.main
-                    : theme.palette.error.main,
-                  color: '#fff',
-                  borderRadius: '0.25rem',
-                  padding: '0.25rem',
-                  fontWeight: 'bold',
-                })}
-              >
-                {cell.getValue() ? 'Yes' : 'No'}
-              </Box>
-            ),
           },
         ],
       },
@@ -143,11 +221,19 @@ const Rooms = () => {
       >
         <img
           alt="avatar"
-          height={200}
+          height={180}
           src={row.original.avatar}
           loading="lazy"
           style={{ borderRadius: '50%' }}
         />
+        {/* <Box sx={{ marginLeft: '20px' }}>
+          <div>
+            <strong>Description:</strong> {row.original.description}
+          </div>
+          <div>
+            <strong>Rating:</strong> {row.original.rating}
+          </div>
+        </Box> */}
       </Box>
     ),
     renderRowActionMenuItems: ({ closeMenu, table }) => [
@@ -187,116 +273,44 @@ const Rooms = () => {
     ],
   });
 
-  const [isCreateUserModalOpen, setCreateUserModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openCreateUserModal = () => {
-    setCreateUserModalOpen(true);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
-  const closeCreateUserModal = () => {
-    setCreateUserModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      avatar: '',
-      isAdmin: false,
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      console.log('Form submitted:', values);
-      // Add logic for creating a new user
-      closeCreateUserModal();
-    },
-  });
+  const handleAddHotel = (hotelData) => {
+    // Add your logic for handling the create action with hotelData
+    console.log('Create Clicked with data:', hotelData);
+    // Close the modal after handling the action
+    handleCloseModal();
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 2, textAlign: 'right' }}>
+        {/* Create button */}
         <Button
           variant="contained"
           color="primary"
           startIcon={<Add />}
-          onClick={openCreateUserModal}
+          onClick={handleOpenModal}
         >
-          Add New Rooms
+          Add new Room
         </Button>
       </Box>
       <MaterialReactTable table={table} />
-      <Dialog
-        open={isCreateUserModalOpen}
-        onClose={closeCreateUserModal}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitle>Create New User</DialogTitle>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogContent>
-            <DialogContentText>
-              Please fill in the details for the new user.
-            </DialogContentText>
-            <TextField
-              label="First Name"
-              fullWidth
-              margin="normal"
-              name="firstName"
-              value={formik.values.firstName}
-              onChange={formik.handleChange}
-              error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-              helperText={formik.touched.firstName && formik.errors.firstName}
-            />
-            <TextField
-              label="Last Name"
-              fullWidth
-              margin="normal"
-              name="lastName"
-              value={formik.values.lastName}
-              onChange={formik.handleChange}
-              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-              helperText={formik.touched.lastName && formik.errors.lastName}
-            />
-            <TextField
-              label="Email"
-              fullWidth
-              margin="normal"
-              name="email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-            />
-            <TextField
-              label="Avatar URL"
-              fullWidth
-              margin="normal"
-              name="avatar"
-              value={formik.values.avatar}
-              onChange={formik.handleChange}
-              error={formik.touched.avatar && Boolean(formik.errors.avatar)}
-              helperText={formik.touched.avatar && formik.errors.avatar}
-            />
-            <Box>
-              <label>
-                <input
-                  type="checkbox"
-                  name="isAdmin"
-                  checked={formik.values.isAdmin}
-                  onChange={formik.handleChange}
-                />
-                &nbsp; Is Admin
-              </label>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeCreateUserModal}>Cancel</Button>
-            <Button type="submit" variant="contained" color="primary">
-              Add New Rooms
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+
+      {/* Add Hotel Modal */}
+      <AddHotelModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onAddHotel={handleAddHotel}
+      />
     </Box>
   );
 };
