@@ -1,34 +1,44 @@
+import React, { useState } from 'react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import {
+  Box,
+  Button,
+  ListItemIcon,
+  MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
+import { Edit, Delete, Add } from '@mui/icons-material';
 import { useMemo } from 'react';
-// MRT Imports
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table';
-
-// Material UI Imports
-import {
-  Box,
-  ListItemIcon,
-  MenuItem,
-} from '@mui/material';
-import {
-  Button,
-} from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
-// Icons Imports
-// Users Data
 import { data } from './makeData';
+
+const validationSchema = yup.object({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  email: yup.string().email('Invalid email').required('Email is required'),
+  avatar: yup.string().url('Invalid URL').required('Avatar URL is required'),
+  isAdmin: yup.boolean(),
+});
 
 const Rooms = () => {
   const columns = useMemo(
     () => [
       {
-        id: 'users', // id used to define `group` column
+        id: 'users',
         header: 'Users',
         columns: [
           {
-            accessorFn: (row) => `${row.firstName} ${row.lastName}`, // accessorFn used to join multiple data into a single cell
-            id: 'name', // id is still required when using accessorFn instead of accessorKey
+            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+            id: 'name',
             header: 'Name',
             size: 250,
             Cell: ({ renderedCellValue, row }) => (
@@ -46,32 +56,33 @@ const Rooms = () => {
                   loading="lazy"
                   style={{ borderRadius: '50%' }}
                 />
-                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: 'username', // Added column for username
+            accessorKey: 'username',
             header: 'Username',
-            size: 200, // Adjust size as needed
+            size: 200,
           },
           {
-            accessorKey: 'email', // accessorKey used to define `data` column. `id` gets set to accessorKey automatically
+            accessorKey: 'email',
             enableClickToCopy: true,
             filterVariant: 'autocomplete',
             header: 'Email',
             size: 350,
           },
           {
-            accessorKey: 'isAdmin', // Added column for isAdmin
+            accessorKey: 'isAdmin',
             header: 'Is Admin',
-            size: 100, // Adjust size as needed
+            size: 100,
             Cell: ({ cell }) => (
               <Box
                 component="span"
                 sx={(theme) => ({
-                  backgroundColor: cell.getValue() ? theme.palette.success.main : theme.palette.error.main,
+                  backgroundColor: cell.getValue()
+                    ? theme.palette.success.main
+                    : theme.palette.error.main,
                   color: '#fff',
                   borderRadius: '0.25rem',
                   padding: '0.25rem',
@@ -90,7 +101,7 @@ const Rooms = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -121,13 +132,13 @@ const Rooms = () => {
     renderDetailPanel: ({ row }) => (
       <Box
         sx={{
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'space-around',
-        left: '30px',
-        maxWidth: '1000px',
-        position: 'sticky',
-        width: '100%',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'space-around',
+          left: '30px',
+          maxWidth: '1000px',
+          position: 'sticky',
+          width: '100%',
         }}
       >
         <img
@@ -143,9 +154,9 @@ const Rooms = () => {
       <MenuItem
         key="edit"
         onClick={() => {
-          console.log("Edit Clicked");
+          console.log('Edit Clicked');
           const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach(row => table.editRow(row.id));
+          selectedRows.forEach((row) => table.editRow(row.id));
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -159,7 +170,7 @@ const Rooms = () => {
         key="delete"
         onClick={() => {
           const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach(row => {
+          selectedRows.forEach((row) => {
             // Perform the desired action, e.g., deleting the row
             table.deleteRow(row.id);
           });
@@ -176,23 +187,116 @@ const Rooms = () => {
     ],
   });
 
+  const [isCreateUserModalOpen, setCreateUserModalOpen] = useState(false);
+
+  const openCreateUserModal = () => {
+    setCreateUserModalOpen(true);
+  };
+
+  const closeCreateUserModal = () => {
+    setCreateUserModalOpen(false);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      avatar: '',
+      isAdmin: false,
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      console.log('Form submitted:', values);
+      // Add logic for creating a new user
+      closeCreateUserModal();
+    },
+  });
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 2, textAlign: 'right' }}>
-        {/* Create button */}
         <Button
           variant="contained"
           color="primary"
           startIcon={<Add />}
-          onClick={() => {
-            // Add your logic for creating a new table or handling the create action
-            console.log("Create Clicked");
-          }}
+          onClick={openCreateUserModal}
         >
-          Create
+          Add New Rooms
         </Button>
       </Box>
       <MaterialReactTable table={table} />
+      <Dialog
+        open={isCreateUserModalOpen}
+        onClose={closeCreateUserModal}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle>Create New User</DialogTitle>
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <DialogContentText>
+              Please fill in the details for the new user.
+            </DialogContentText>
+            <TextField
+              label="First Name"
+              fullWidth
+              margin="normal"
+              name="firstName"
+              value={formik.values.firstName}
+              onChange={formik.handleChange}
+              error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+              helperText={formik.touched.firstName && formik.errors.firstName}
+            />
+            <TextField
+              label="Last Name"
+              fullWidth
+              margin="normal"
+              name="lastName"
+              value={formik.values.lastName}
+              onChange={formik.handleChange}
+              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+              helperText={formik.touched.lastName && formik.errors.lastName}
+            />
+            <TextField
+              label="Email"
+              fullWidth
+              margin="normal"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              label="Avatar URL"
+              fullWidth
+              margin="normal"
+              name="avatar"
+              value={formik.values.avatar}
+              onChange={formik.handleChange}
+              error={formik.touched.avatar && Boolean(formik.errors.avatar)}
+              helperText={formik.touched.avatar && formik.errors.avatar}
+            />
+            <Box>
+              <label>
+                <input
+                  type="checkbox"
+                  name="isAdmin"
+                  checked={formik.values.isAdmin}
+                  onChange={formik.handleChange}
+                />
+                &nbsp; Is Admin
+              </label>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeCreateUserModal}>Cancel</Button>
+            <Button type="submit" variant="contained" color="primary">
+              Add New Rooms
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </Box>
   );
 };

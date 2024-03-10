@@ -1,36 +1,142 @@
-import { useMemo } from 'react';
-// MRT Imports
-import {
-  MaterialReactTable,
-  useMaterialReactTable,
-} from 'material-react-table';
-
-// Material UI Imports
+import React, { useState, useMemo } from 'react';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import {
   Box,
+  Button,
   ListItemIcon,
   MenuItem,
-} from '@mui/material';
-import {
-  Button,
+  Modal,
+  TextField,
 } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
-// Icons Imports
-// Users Data
-import { data } from './makeData';
+import { data } from './HotelData';
+
+const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
+  const [hotelData, setHotelData] = useState({
+    name: '',
+    type: '',
+    city: '',
+    avatar: '',
+    address: '',
+    title: '',
+    description: '',
+    rating: '',
+    rooms: '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setHotelData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleAddHotel = () => {
+    onAddHotel(hotelData);
+    onClose();
+  };
+
+  return (
+    <Modal open={isOpen} onClose={onClose}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          p: 2,
+        }}
+      >
+        <h2>Add new Hotel</h2>
+        <TextField
+          label="Name"
+          name="name"
+          value={hotelData.name}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+
+        />
+        <TextField
+          label="Type"
+          name="type"
+          value={hotelData.type}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+
+        />
+        <TextField
+          label="City"
+          name="city"
+          value={hotelData.city}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+
+        />
+         {/* <TextField
+          label="Address"
+          name="address"
+          value={hotelData.address}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+        /> */}
+         <TextField
+          label="Photos"
+          name="photo"
+          value={hotelData.photo}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+
+        />
+        <TextField
+          label="Title"
+          name="title"
+          value={hotelData.title}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+          />
+        <TextField
+          label="Description"
+          name="description"
+          value={hotelData.description}
+          onChange={handleInputChange}
+          fullWidth
+          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
+          />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={handleAddHotel}
+        >
+          Add Hotel
+        </Button>
+      </Box>
+    </Modal>
+  );
+};
 
 const Hotels = () => {
   const columns = useMemo(
     () => [
       {
-        id: 'users', // id used to define `group` column
-        header: 'Users',
+        id: 'hotels',
+        header: 'Hotels',
         columns: [
           {
-            accessorFn: (row) => `${row.firstName} ${row.lastName}`, // accessorFn used to join multiple data into a single cell
-            id: 'name', // id is still required when using accessorFn instead of accessorKey
-            header: 'Name',
-            size: 250,
+            accessorFn: (row) => row.hotelName,
+            id: 'hotelName',
+            header: 'Hotel Name',
+            size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
                 sx={{
@@ -40,47 +146,50 @@ const Hotels = () => {
                 }}
               >
                 <img
-                  alt="avatar"
+                  alt="hotel-photo"
                   height={30}
-                  src={row.original.avatar}
+                  src={row.original.photo}
                   loading="lazy"
                   style={{ borderRadius: '50%' }}
                 />
-                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: 'username', // Added column for username
-            header: 'Username',
-            size: 200, // Adjust size as needed
+            accessorKey: 'type',
+            header: 'Type',
+            size: 150,
           },
           {
-            accessorKey: 'email', // accessorKey used to define `data` column. `id` gets set to accessorKey automatically
+            accessorKey: 'city',
             enableClickToCopy: true,
             filterVariant: 'autocomplete',
-            header: 'Email',
-            size: 350,
+            header: 'City',
+            size: 180,
           },
           {
-            accessorKey: 'isAdmin', // Added column for isAdmin
-            header: 'Is Admin',
-            size: 100, // Adjust size as needed
-            Cell: ({ cell }) => (
-              <Box
-                component="span"
-                sx={(theme) => ({
-                  backgroundColor: cell.getValue() ? theme.palette.success.main : theme.palette.error.main,
-                  color: '#fff',
-                  borderRadius: '0.25rem',
-                  padding: '0.25rem',
-                  fontWeight: 'bold',
-                })}
-              >
-                {cell.getValue() ? 'Yes' : 'No'}
-              </Box>
+            accessorKey: 'photo',
+            header: 'Photo',
+            Cell: ({ row }) => (
+              <img
+                alt="avatar"
+                height={50}
+                src={row.original.avatar}
+                loading="lazy"
+                style={{ borderRadius: '5px' }}
+              />
             ),
+          },
+          {
+            accessorKey: 'title',
+            header: 'Title',
+            size: 200,
+          },
+          {
+            accessorKey: 'rooms',
+            header: 'Rooms',
+            size: 100,
           },
         ],
       },
@@ -90,7 +199,7 @@ const Hotels = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -121,31 +230,39 @@ const Hotels = () => {
     renderDetailPanel: ({ row }) => (
       <Box
         sx={{
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'space-around',
-        left: '30px',
-        maxWidth: '1000px',
-        position: 'sticky',
-        width: '100%',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'space-around',
+          left: '30px',
+          maxWidth: '1000px',
+          position: 'sticky',
+          width: '100%',
         }}
       >
         <img
           alt="avatar"
-          height={200}
+          height={180}
           src={row.original.avatar}
           loading="lazy"
           style={{ borderRadius: '50%' }}
         />
+        <Box sx={{ marginLeft: '20px' }}>
+          <div>
+            <strong>Description:</strong> {row.original.description}
+          </div>
+          <div>
+            <strong>Rating:</strong> {row.original.rating}
+          </div>
+        </Box>
       </Box>
     ),
     renderRowActionMenuItems: ({ closeMenu, table }) => [
       <MenuItem
         key="edit"
         onClick={() => {
-          console.log("Edit Clicked");
+          console.log('Edit Clicked');
           const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach(row => table.editRow(row.id));
+          selectedRows.forEach((row) => table.editRow(row.id));
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -157,15 +274,15 @@ const Hotels = () => {
       </MenuItem>,
       <MenuItem
         key="delete"
-       onClick={() => {
-  const selectedRows = table.getSelectedRowModel().flatRows;
-  selectedRows.forEach(row => {
-    // Perform the desired action, e.g., deleting the row
-    table.deleteRow(row.id);
-  });
-  // Close the menu after performing the action
-  closeMenu();
-}}
+        onClick={() => {
+          const selectedRows = table.getSelectedRowModel().flatRows;
+          selectedRows.forEach((row) => {
+            // Perform the desired action, e.g., deleting the row
+            table.deleteRow(row.id);
+          });
+          // Close the menu after performing the action
+          closeMenu();
+        }}
         sx={{ m: 0 }}
       >
         <ListItemIcon>
@@ -176,6 +293,23 @@ const Hotels = () => {
     ],
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleAddHotel = (hotelData) => {
+    // Add your logic for handling the create action with hotelData
+    console.log('Create Clicked with data:', hotelData);
+    // Close the modal after handling the action
+    handleCloseModal();
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 2, textAlign: 'right' }}>
@@ -184,15 +318,19 @@ const Hotels = () => {
           variant="contained"
           color="primary"
           startIcon={<Add />}
-          onClick={() => {
-            // Add your logic for creating a new table or handling the create action
-            console.log("Create Clicked");
-          }}
+          onClick={handleOpenModal}
         >
-          Create
+          Add new Hotel
         </Button>
       </Box>
       <MaterialReactTable table={table} />
+
+      {/* Add Hotel Modal */}
+      <AddHotelModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onAddHotel={handleAddHotel}
+      />
     </Box>
   );
 };
