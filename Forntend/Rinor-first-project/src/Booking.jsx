@@ -21,9 +21,9 @@ const Bookings = () => {
         header: 'All Bookings',
         columns: [
           {
-            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-            id: 'name',
-            header: 'Name',
+            accessorFn: (row) => `${row.hotelId} ${row.hotelId}`,
+            id: 'hotelId',
+            header: 'hotelId',
             size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
@@ -45,18 +45,23 @@ const Bookings = () => {
             ),
           },
           {
+            accessorKey: 'roomId',
+            header: 'roomId',
+            size: 150,
+          },
+          {
             accessorKey: 'mobile',
-            header: 'Mobile',
+            header: 'mobile',
             size: 150,
           },
           {
             accessorKey: 'arrive',
-            header: 'Arrive',
+            header: 'arrive',
             size: 150,
           },
           {
             accessorKey: 'depart',
-            header: 'Depart',
+            header: 'depart',
             size: 150,
           },
           // {
@@ -117,8 +122,8 @@ const Bookings = () => {
     renderDetailPanel: ({ row }) => (
       <Box
         sx={{
-        alignItems: 'center',
-        display: 'flex',
+        alignItems: 'left',
+        // display: 'flex',
         justifyContent: 'space-around',
         left: '30px',
         maxWidth: '1000px',
