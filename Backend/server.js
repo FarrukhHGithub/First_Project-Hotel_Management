@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import usersRoute from "./Routes/user.routes.js";
 import authRoute from "./Routes/AuthRoutes.js";
 
 
@@ -51,6 +52,7 @@ app.use((err, req, res, next) => {
   });
 });
 app.use("/api/auth", authRoute);
+app.use("/api/users", usersRoute);
 app.listen(port, () => {
 DatabaseConnection();
   console.log(`Server Listen on port ${port}`);
