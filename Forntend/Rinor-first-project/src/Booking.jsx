@@ -1,5 +1,4 @@
-import React from 'react';
-import { useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -9,85 +8,66 @@ import {
   ListItemIcon,
   MenuItem,
   Button,
+  Modal,
+  TextField,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { data } from './bookingData';
 
 const Bookings = () => {
-  const columns = useMemo(
-    () => [
-      {
-        id: 'users',
-        header: 'All Bookings',
-        columns: [
-          {
-            accessorFn: (row) => `${row.hotelId} ${row.hotelId}`,
-            id: 'hotelId',
-            header: 'hotelId',
-            size: 200,
-            Cell: ({ renderedCellValue, row }) => (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
-              >
-                <img
-                  alt="avatar"
-                  height={30}
-                  src={row.original.avatar}
-                  loading="lazy"
-                  style={{ borderRadius: '50%' }}
-                />
-                <span>{renderedCellValue}</span>
-              </Box>
-            ),
-          },
-          {
-            accessorKey: 'roomId',
-            header: 'roomId',
-            size: 150,
-          },
-          {
-            accessorKey: 'mobile',
-            header: 'mobile',
-            size: 150,
-          },
-          {
-            accessorKey: 'arrive',
-            header: 'arrive',
-            size: 150,
-          },
-          {
-            accessorKey: 'depart',
-            header: 'depart',
-            size: 150,
-          },
-          // {
-          //   accessorKey: 'isPaid', // Corrected accessorKey
-          //   header: 'Payment', // Changed header
-          //   size: 150,
-          //   // Cell: ({ cell }) => (
-          //   //   <Box
-          //   //     component="span"
-          //   //     sx={(theme) => ({
-          //   //       backgroundColor: cell.getValue() ? theme.palette.success.main : theme.palette.error.main,
-          //   //       color: '#fff',
-          //   //       borderRadius: '0.25rem',
-          //   //       padding: '0.25rem',
-          //   //       fontWeight: 'bold',
-          //   //     })}
-          //   //   >
-          //   //     {cell.getValue() ? 'Paid' : 'Unpaid'} {/* Updated logic to display Paid or Unpaid */}
-          //   //   </Box>
-          //   // ),
-          // },
-        ],
-      },
-    ],
-    []
-  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roomId, setRoomId] = useState('');
+  const [hotelId, setHotelId] = useState('');
+  const [arrive, setArrive] = useState('');
+  const [depart, setDepart] = useState('');
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleAddNew = () => {
+    // Logic to handle adding new booking
+    closeModal();
+  };
+
+  const columns = [
+    {
+      id: 'users',
+      header: 'All Bookings',
+      columns: [
+        {
+          accessorFn: (row) => `${row.hotelId} ${row.hotelId}`,
+          id: 'hotelId',
+          header: 'Hotel ID',
+          size: 200,
+        },
+        {
+          accessorKey: 'roomId',
+          header: 'Room ID',
+          size: 150,
+        },
+        {
+          accessorKey: 'mobile',
+          header: 'Mobile',
+          size: 150,
+        },
+        {
+          accessorKey: 'arrive',
+          header: 'Arrive',
+          size: 150,
+        },
+        {
+          accessorKey: 'depart',
+          header: 'Depart',
+          size: 150,
+        },
+      ],
+    },
+  ];
 
   const table = useMaterialReactTable({
     columns,
@@ -174,9 +154,76 @@ const Bookings = () => {
   return (
     <>
       <Box mb={2} textAlign="right">
-        <Button variant="contained" color="primary">ADD NEW+</Button>
+        <Button variant="contained" color="primary" onClick={openModal}>ADD NEW+</Button>
       </Box>
       <MaterialReactTable table={table} />
+
+      <Modal
+        open={isModalOpen}
+        onClose={closeModal}
+        aria-labelledby="add-new-booking-modal"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            width: 400,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <h2 id="add-new-booking-modal">Add New Booking</h2>
+          <TextField
+            id="roomId"
+            label="Room ID"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            id="hotelId"
+            label="Hotel ID"
+            value={hotelId}
+            onChange={(e) => setHotelId(e.target.value)}
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            id="arrive"
+            label="Arrive"
+            type="date"
+            value={arrive}
+            onChange={(e) => setArrive(e.target.value)}
+            fullWidth
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            id="depart"
+            label="Depart"
+            type="date"
+            value={depart}
+            onChange={(e) => setDepart(e.target.value)}
+            fullWidth
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            sx={{ mb: 2 }}
+          />
+          <Button variant="contained" color="primary" onClick={handleAddNew}>Add</Button>
+        </Box>
+      </Modal>
     </>
   );
 };

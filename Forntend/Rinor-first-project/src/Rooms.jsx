@@ -1,5 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+import { useState, useMemo } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
 import {
   Box,
   Button,
@@ -7,169 +12,86 @@ import {
   MenuItem,
   Modal,
   TextField,
-} from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
-import { data } from './HotelData';
-
-const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
-  const [hotelData, setHotelData] = useState({
-    name: '',
-    type: '',
-    city: '',
-    avatar: '',
-    address: '',
-    title: '',
-    description: '',
-    rating: '',
-    rooms: '',
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setHotelData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleAddHotel = () => {
-    onAddHotel(hotelData);
-    onClose();
-  };
-
-  return (
-    <Modal open={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          p: 2,
-        }}
-      >
-        <h2>Add new Room</h2>
-         <TextField
-          label="Title"
-          name="title"
-          value={hotelData.title}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-        />
-           <TextField
-          label="Price"
-          name="price"
-          value={hotelData.price}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-        />
-        <TextField
-          label="Max-People"
-          name="maxPeople"
-          value={hotelData.maxPeople}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
-        <TextField
-          label="Description"
-          name="description"
-          value={hotelData.description}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
-           <TextField
-          label="Room-Number"
-          name="roomNumber"
-          value={hotelData.roomNumber}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleAddHotel}
-        >
-          Add New Rooms
-        </Button>
-      </Box>
-    </Modal>
-  );
-};
+  Typography,
+} from "@mui/material";
+import { data } from "./roomData";
+import { Delete, Edit } from "@mui/icons-material";
 
 const Rooms = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   const columns = useMemo(
     () => [
       {
-        id: 'Rooms',
-        header: 'Rooms',
+        id: "avatar",
+        header: "Image",
+        size: 50,
+        Cell: ({ row }) => (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img
+              alt="room"
+              height={100}
+              src={row.original.avatar}
+              loading="lazy"
+              style={{ borderRadius: "5px" }}
+            />
+          </Box>
+        ),
+      },
+      {
+        id: "rooms",
+        header: "All Rooms",
         columns: [
           {
-            accessorFn: (row) => row.hotelName,
-            id: 'title',
-            header: 'title',
-            size: 200,
-            Cell: ({ renderedCellValue, row }) => (
+            accessorFn: (row) => row.id,
+            id: "id",
+            header: "#",
+            size: 50,
+          },
+          {
+            accessorKey: "roomType",
+            header: "Type",
+            size: 50,
+          },
+          {
+            accessorKey: "bedType",
+            header: "Bed",
+            size: 50,
+          },
+          {
+            accessorKey: "nightlyRate",
+            header: "Rent",
+            size: 50,
+          },
+          {
+            accessorKey: "isBooked",
+            header: "Status",
+            size: 100,
+            Cell: ({ cell }) => (
               <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
+                component="span"
+                sx={(theme) => ({
+                  backgroundColor: cell.getValue()
+                    ? theme.palette.success.main
+                    : theme.palette.warning.main,
+                  color: "#fff",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  fontWeight: "500",
+                })}
               >
-                {/* <img
-                  alt="Room-Photos"
-                  height={30}
-                  src={row.original.photo}
-                  loading="lazy"
-                  style={{ borderRadius: '50%' }}
-                /> */}
-                <span>{renderedCellValue}</span>
+                {cell.getValue() ? "Available" : "Booked"}{" "}
+                {/* Updated logic to display Paid or Unpaid */}
               </Box>
             ),
-          },
-          {
-            accessorKey: 'title',
-            header: 'title',
-            size: 150,
-          },
-          {
-            accessorKey: 'price',
-            enableClickToCopy: true,
-            filterVariant: 'autocomplete',
-            header: 'price',
-            size: 180,
-          },
-          {
-            accessorKey: 'maxPeople',
-            header: 'maxPeople',
-            Cell: ({ row }) => (
-              <img
-                alt="avatar"
-                height={50}
-                src={row.original.avatar}
-                loading="lazy"
-                style={{ borderRadius: '5px' }}
-              />
-            ),
-          },
-          {
-            accessorKey: 'description',
-            header: 'description',
-            size: 200,
-          },
-          {
-            accessorKey: 'roomNumber',
-            header: 'roomNumber',
-            size: 100,
           },
         ],
       },
@@ -191,58 +113,48 @@ const Rooms = () => {
       showColumnFilters: false,
       showGlobalFilter: true,
       columnPinning: {
-        left: ['mrt-row-expand', 'mrt-row-select'],
-        right: ['mrt-row-actions'],
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
       },
     },
-    paginationDisplayMode: 'pages',
-    positionToolbarAlertBanner: 'bottom',
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
     muiSearchTextFieldProps: {
-      size: 'small',
-      variant: 'outlined',
+      size: "small",
+      variant: "outlined",
     },
     muiPaginationProps: {
-      color: 'secondary',
+      color: "secondary",
       rowsPerPageOptions: [5, 10, 15, 20, 25, 30],
-      shape: 'rounded',
-      variant: 'outlined',
+      shape: "rounded",
+      variant: "outlined",
     },
     renderDetailPanel: ({ row }) => (
       <Box
         sx={{
-          alignItems: 'center',
-          display: 'flex',
-          justifyContent: 'space-around',
-          left: '30px',
-          maxWidth: '1000px',
-          position: 'sticky',
-          width: '100%',
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "space-around",
+          left: "30px",
+          maxWidth: "1000px",
+          position: "sticky",
+          width: "100%",
         }}
       >
         <img
-          alt="avatar"
-          height={180}
+          alt="room"
+          height={300}
           src={row.original.avatar}
           loading="lazy"
-          style={{ borderRadius: '50%' }}
+          style={{ borderRadius: "5px" }}
         />
-        {/* <Box sx={{ marginLeft: '20px' }}>
-          <div>
-            <strong>Description:</strong> {row.original.description}
-          </div>
-          <div>
-            <strong>Rating:</strong> {row.original.rating}
-          </div>
-        </Box> */}
       </Box>
     ),
     renderRowActionMenuItems: ({ closeMenu, table }) => [
       <MenuItem
         key="edit"
         onClick={() => {
-          console.log('Edit Clicked');
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.editRow(row.id));
+          // Edit logic...
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -256,11 +168,7 @@ const Rooms = () => {
         key="delete"
         onClick={() => {
           const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => {
-            // Perform the desired action, e.g., deleting the row
-            table.deleteRow(row.id);
-          });
-          // Close the menu after performing the action
+          selectedRows.forEach((row) => table.deleteRow(row.id));
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -273,45 +181,65 @@ const Rooms = () => {
     ],
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleAddHotel = (hotelData) => {
-    // Add your logic for handling the create action with hotelData
-    console.log('Create Clicked with data:', hotelData);
-    // Close the modal after handling the action
-    handleCloseModal();
-  };
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ mb: 2, textAlign: 'right' }}>
-        {/* Create button */}
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleOpenModal}
-        >
-          Add new Room
+    <>
+      <Box mb={2} textAlign="right">
+        <Button variant="contained" color="primary" onClick={handleModalOpen}>
+          ADD NEW+
         </Button>
       </Box>
       <MaterialReactTable table={table} />
 
-      {/* Add Hotel Modal */}
-      <AddHotelModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onAddHotel={handleAddHotel}
-      />
-    </Box>
+      {/* New Room Form */}
+      <Modal open={isModalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            width: 400,
+            maxWidth: "90%",
+            maxHeight: "90%",
+            overflowY: "auto",
+          }}
+        >
+          <form>
+            <Typography variant="h5">Add New Room</Typography>
+            <TextField
+              variant="standard"
+              label="Type"
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              variant="standard"
+              label="Bed"
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              variant="standard"
+              label="Rent(in dollars)"
+              fullWidth
+              margin="normal"
+            />
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleModalClose}
+              >
+                Add Room
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
+    </>
   );
 };
 
