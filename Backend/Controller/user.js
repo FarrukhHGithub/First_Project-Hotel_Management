@@ -17,13 +17,12 @@ export const updateUser = async (req, res, next) => {
 };
 export const deleteUser = async (req, res, next) => {
   try {
-    const { password, ...deletedUser } = await User.findByIdAndDelete(
-      req.params.id
-    );
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
-      return res.status(404).send({ message: "User not found." });
+      return res.status(404).json({ message: "User not found." });
     }
-    res.status(200).send({ message: "User has been deleted.", deletedUser });
+    const { password, ...deletedUserDetails } = deletedUser._doc;
+    res.status(200).json({ message: "User has been deleted.", userDetails: { ...deletedUserDetails } });
   } catch (err) {
     next(err);
   }
