@@ -79,14 +79,14 @@ const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
 
         />
-         {/* <TextField
+         <TextField
           label="Address"
           name="address"
           value={hotelData.address}
           onChange={handleInputChange}
           fullWidth
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-        /> */}
+        />
          <TextField
           label="Photos"
           name="photo"
@@ -96,22 +96,22 @@ const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
 
         />
-        <TextField
+        {/* <TextField
           label="Title"
           name="title"
           value={hotelData.title}
           onChange={handleInputChange}
           fullWidth
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
-        <TextField
+          /> */}
+        {/* <TextField
           label="Description"
           name="description"
           value={hotelData.description}
           onChange={handleInputChange}
           fullWidth
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
+          /> */}
         <Button
           variant="contained"
           color="primary"
@@ -182,8 +182,8 @@ const Hotels = () => {
             ),
           },
           {
-            accessorKey: 'title',
-            header: 'Title',
+            accessorKey: 'rating',
+            header: 'rating',
             size: 200,
           },
           {
@@ -250,9 +250,9 @@ const Hotels = () => {
           <div>
             <strong>Description:</strong> {row.original.description}
           </div>
-          <div>
+          {/* <div>
             <strong>Rating:</strong> {row.original.rating}
-          </div>
+          </div> */}
         </Box>
       </Box>
     ),
