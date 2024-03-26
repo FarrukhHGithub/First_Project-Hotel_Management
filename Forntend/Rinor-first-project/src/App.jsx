@@ -27,11 +27,11 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
-import Dashboard from './Dashboard';
-import Hotels from './Hotels';
-import Rooms from './Rooms';
-import User from './User';
-import Booking from './Booking';
+import Dashboard from './Hotel_Management/Dashboard/Dashboard';
+import Hotels from './Hotel_Management/Hotels/Hotels';
+import Rooms from './Hotel_Management/Rooms/Rooms';
+import User from './Hotel_Management/Users/User';
+import Booking from './Hotel_Management/Bookings/Booking';
 import LogoImage from "./assets/logo.png";
 import LoginForm from './Verification/Login'
 import RegisterForm from './Verification/Register'
