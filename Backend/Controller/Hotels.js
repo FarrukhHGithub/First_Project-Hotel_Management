@@ -1,28 +1,22 @@
 import Hotel from "../Model/hotelModel.js";
 import upload from "../Utils/multer.js";
-import mongoose from "mongoose";
-// import Room from "../Model/roomModel.js";
 
 export const createHotel = async (req, res, next) => {
   try {
-    upload.single("photos")(req, res, async function (err) {
+    upload(req, res, async function (err) {
       if (err) {
         console.error("Error uploading images:", err);
         return res.status(500).json({ error: "Error uploading images" });
       }
 
       try {
-        const photo = req.file.path;
+        // Assuming `photos` is the field name for the uploaded images
+        const photos = req.files.map(file => file.path);
+        console.log("Uploaded photos:", photos);
 
         const newHotel = new Hotel({
-          name: req.body.name,
-          type: req.body.type,
-          city: req.body.city,
-          photos: [photo],
-          title: req.body.title,
-          desc: req.body.desc,
-          rating: req.body.rating,
-          rooms: req.body.rooms,
+          ...req.body,
+          photos: photos,
         });
 
         const savedHotel = await newHotel.save();
@@ -37,8 +31,9 @@ export const createHotel = async (req, res, next) => {
     next(err);
   }
 };
-
 export const updateHotel = async (req, res, next) => {
+  console.log("Request Body ", req.body);
+  console.log("Request file ", req.file);
   try {
     const updatedHotel = await Hotel.findByIdAndUpdate(
       req.params.id,
@@ -50,7 +45,6 @@ export const updateHotel = async (req, res, next) => {
     next(err);
   }
 };
-
 export const deleteHotel = async (req, res, next) => {
   try {
     await Hotel.findByIdAndDelete(req.params.id);
@@ -59,7 +53,6 @@ export const deleteHotel = async (req, res, next) => {
     next(err);
   }
 };
-
 export const getHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
@@ -68,8 +61,10 @@ export const getHotel = async (req, res, next) => {
     next(err);
   }
 };
-
 export const getHotels = async (req, res, next) => {
+  console.log("Request Queries", req.query);
+  const { min, max, ...others } = req.query;
+
   try {
     const hotels = await Hotel.find().limit(req.query.limit);
     res.status(200).json(hotels);
@@ -77,7 +72,6 @@ export const getHotels = async (req, res, next) => {
     next(err);
   }
 };
-
 export const countByCity = async (req, res, next) => {
   const cities = req.query.cities.split(",");
   try {
@@ -91,7 +85,6 @@ export const countByCity = async (req, res, next) => {
     next(err);
   }
 };
-
 export const countByType = async (req, res, next) => {
   try {
     const hotelCount = await Hotel.countDocuments({ type: "hotel" });
