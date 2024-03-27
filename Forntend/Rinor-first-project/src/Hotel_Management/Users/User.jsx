@@ -290,10 +290,10 @@ const User = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={closeCreateUserModal}>Cancel</Button>
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="primary"  style={{ position: 'absolute', right: "74%"}}>
               Create User
             </Button>
+            <Button  type="submit" variant="contained" color="primary"  onClick={closeCreateUserModal}>Cancel</Button>
           </DialogActions>
         </form>
       </Dialog>

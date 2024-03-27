@@ -104,22 +104,30 @@ const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
           fullWidth
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
           /> */}
-        {/* <TextField
-          label="Description"
-          name="description"
-          value={hotelData.description}
+        <TextField
+          label="Price"
+          name="price"
+          value={hotelData.price}
           onChange={handleInputChange}
           fullWidth
           style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          /> */}
-        <Button
+          />
+            <Button
           variant="contained"
           color="primary"
           startIcon={<Add />}
           onClick={handleAddHotel}
+          style={{ marginLeft: '8px' }}
         >
-          Add Hotel
+          Add New Hotel
         </Button>
+        {/* Close Button */}
+        <Button variant="contained" style= {{ position: 'absolute', top: "91%", right: 11}} onClick={onClose}>
+          Close
+        </Button>
+
+        {/* Add Hotel Button */}
+      
       </Box>
     </Modal>
   );
@@ -157,17 +165,18 @@ const Hotels = () => {
             ),
           },
           {
-            accessorKey: 'type',
-            header: 'Type',
-            size: 150,
+            accessorKey: "hotelType",
+            header: "Type",
+            size: 50,
           },
           {
             accessorKey: 'city',
             enableClickToCopy: true,
             filterVariant: 'autocomplete',
             header: 'City',
-            size: 180,
+            size: 150,
           },
+          
           {
             accessorKey: 'photo',
             header: 'Photo',
@@ -184,7 +193,12 @@ const Hotels = () => {
           {
             accessorKey: 'rating',
             header: 'rating',
-            size: 200,
+            size: 150,
+          },
+          {
+            accessorKey: "nightlyRate",
+            header: "Rent",
+            size: 50,
           },
           {
             accessorKey: 'rooms',

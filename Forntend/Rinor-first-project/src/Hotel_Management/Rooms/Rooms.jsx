@@ -227,6 +227,14 @@ const Rooms = () => {
               fullWidth
               margin="normal"
             />
+               <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModalClose}
+          style={{ position: 'absolute', top: "81%", right: 10}}
+        >
+          Close
+        </Button>
             <Box mt={2}>
               <Button
                 variant="contained"

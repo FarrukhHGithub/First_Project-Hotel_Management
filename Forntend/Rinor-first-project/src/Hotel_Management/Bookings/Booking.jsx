@@ -222,6 +222,7 @@ const Bookings = () => {
             sx={{ mb: 2 }}
           />
           <Button variant="contained" color="primary" onClick={handleAddNew}>Add</Button>
+          <Button variant="contained" color="primary"style={{ position: 'absolute', top: "85.7%", right: 10}} onClick={closeModal}>close</Button>
         </Box>
       </Modal>
     </>
