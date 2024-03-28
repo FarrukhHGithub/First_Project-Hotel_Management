@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import usersRoute from "./Routes/user.routes.js";
 import authRoute from "./Routes/AuthRoutes.js";
 import HotelRoute from "./Routes/hotel.routes.js";
+import roomRoute from "./Routes/room.routes.js";
 
 
 
@@ -55,6 +56,7 @@ app.use((err, req, res, next) => {
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/hotel", HotelRoute);
+app.use("/api/room", roomRoute);
 app.listen(port, () => {
 DatabaseConnection();
   console.log(`Server Listen on port ${port}`);
