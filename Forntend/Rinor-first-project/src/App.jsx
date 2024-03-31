@@ -35,6 +35,7 @@ import Booking from './Hotel_Management/Bookings/Booking';
 import LogoImage from "./assets/logo.png";
 import LoginForm from './Verification/Login'
 import RegisterForm from './Verification/Register'
+// import Chart from "./Hotel_Management/Dashboard/Chart"
 
 
 const drawerWidth = 240;
@@ -176,12 +177,14 @@ export default function PersistentDrawerLeft() {
             <Main open={open}>
               <DrawerHeader />
               <Routes>
-  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/Dashboard" element={<Dashboard />} />
+  {/* <Route path="/Chart" component={<Chart/>} /> */}
   <Route path="/user" element={<User />} />
   <Route path="/hotels" element={<Hotels />} />
   <Route path="/rooms" element={<Rooms />} />
   <Route path="/booking" element={<Booking />} />
   <Route path="/login" element={<LoginForm />} />
+  
   <Route path="/register" element={<RegisterForm />} />
 </Routes>
 
