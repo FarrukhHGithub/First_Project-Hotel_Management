@@ -35,7 +35,6 @@ import Booking from './Hotel_Management/Bookings/Booking';
 import LogoImage from "./assets/logo.png";
 import LoginForm from './Verification/Login'
 import RegisterForm from './Verification/Register'
-// import Chart from "./Hotel_Management/Dashboard/Chart"
 
 
 const drawerWidth = 240;
