@@ -12,9 +12,6 @@ const HotelSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  // distance: {
-  //   type: String,
-  // },
   photos: {
     type: [String],
   },
@@ -29,9 +26,8 @@ const HotelSchema = new mongoose.Schema({
     min: 0,
     max: 5,
   },
-  rooms: {
-    type: Array,
-  },
+  rooms: [Array],
+  
   cheapestPrice: {
     type: Number,
   },

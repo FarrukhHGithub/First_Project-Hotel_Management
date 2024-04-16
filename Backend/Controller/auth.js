@@ -22,15 +22,13 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    const isPasswordCorrect = user && await bcrypt.compare(req.body.password, user.password);
+    const isPasswordCorrect =
+      user && (await bcrypt.compare(req.body.password, user.password));
 
     if (!isPasswordCorrect)
       return res.status(400).send("Wrong password or username!");
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
     const { password, ...otherDetails } = user._doc;
     res
