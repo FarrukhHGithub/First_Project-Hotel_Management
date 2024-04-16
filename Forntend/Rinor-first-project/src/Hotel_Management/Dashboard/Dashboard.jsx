@@ -1,66 +1,74 @@
-import * as React from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import BasicBars from './Charts.jsx/Chart';
-import BasicBars1 from './Charts.jsx/Chart2';
-import BasicBars2 from './Charts.jsx/Chart3';
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import BasicBars from "./Charts.jsx/Chart";
+import BasicBars1 from "./Charts.jsx/Chart2";
+import BasicBars2 from "./Charts.jsx/Chart3";
 
 export default function Dashboard() {
-  const [expanded, setExpanded] = React.useState(false);
+  const [tabIndex, setTabIndex] = React.useState(0);
 
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+  const handleChange = (event, newValue) => {
+    setTabIndex(newValue);
   };
 
   return (
-    <div>
-  <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} sx={{marginTop:"5%", marginLeft:"5%"}}>
-    <AccordionSummary
-      expandIcon={<ExpandMoreIcon />}
-      aria-controls="panel1bh-content"
-      id="panel1bh-header"
-    >
-      <Typography sx={{ width: '40%', flexShrink: 0, height:70, color: '#222831', fontSize: '18px' }}>
-    The Graphical Presentaion of How Many Hotels,Rooms Add and Also Show How Many Remove Form Lists
-</Typography>
-    </AccordionSummary>
-    <AccordionDetails>
-      <BasicBars />
-    </AccordionDetails>
-  </Accordion>
-
-  <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} sx={{marginTop:"5%", marginLeft:"5%"}}>
-    <AccordionSummary
-      expandIcon={<ExpandMoreIcon />}
-      aria-controls="panel2bh-content"
-      id="panel2bh-header"
-    >
-      <Typography sx={{ width: '40%', flexShrink: 0, height:70, color: '#222831', fontSize: '18px' }}>
-      The Graphical Presentaion of Total Earnings and Expenses (like Staffs Salaries, Electicity Bills, Water Bills Etc)
-      </Typography>
-    </AccordionSummary>
-    <AccordionDetails>
-    </AccordionDetails>
-    <BasicBars1 />
-  </Accordion>
-
-  <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} sx={{marginTop:"5%", marginLeft:"5%"}}>
-    <AccordionSummary
-      expandIcon={<ExpandMoreIcon />}
-      aria-controls="panel3bh-content"
-      id="panel3bh-header"
-    >
-      <Typography sx={{ width: '40%', flexShrink: 0, height:70, color: '#222831', fontSize: '18px' }}>
-      The Graphical Presentaion of, Where Most Of Our Honouarable Guestes Come From 
-      </Typography>
-    </AccordionSummary>
-    <AccordionDetails>
-    </AccordionDetails>
-    <BasicBars2 />
-  </Accordion> 
-</div>
+    <Card sx={{ marginLeft: "5%" }}>
+      <Tabs
+        value={tabIndex}
+        onChange={handleChange}
+        textColor="primary"
+        indicatorColor="primary"
+        style={{ textColor: "orange" }}
+      >
+        <Tab label="Rooms " />
+        <Tab label="Hotels " />
+        <Tab label="Booking" />
+      </Tabs>
+      <CardContent>
+        {tabIndex === 0 && (
+          <>
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ color: "#222831", fontSize: "18px" }}
+            >
+              The Graphical Presentation of How Many Hotels, Rooms Added and
+              Removed from Lists
+            </Typography>
+            <BasicBars />
+          </>
+        )}
+        {tabIndex === 1 && (
+          <>
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ color: "#222831", fontSize: "18px" }}
+            >
+              The Graphical Presentation of Total Earnings and Expenses (like
+              Staff Salaries, Electricity Bills, Water Bills, etc.)
+            </Typography>
+            <BasicBars1 />
+          </>
+        )}
+        {tabIndex === 2 && (
+          <>
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ color: "#222831", fontSize: "18px" }}
+            >
+              The Graphical Presentation of Where Most of Our Honorable Guests
+              Come From
+            </Typography>
+            <BasicBars2 />
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

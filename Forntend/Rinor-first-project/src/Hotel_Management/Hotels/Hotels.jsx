@@ -1,210 +1,131 @@
-import React, { useState, useMemo } from 'react';
-import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+/* eslint-disable react/prop-types */
+import { useState, useMemo } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
 import {
   Box,
-  Button,
   ListItemIcon,
   MenuItem,
+  Button,
   Modal,
   TextField,
-} from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
-import { data } from './HotelData';
-
-const AddHotelModal = ({ isOpen, onClose, onAddHotel }) => {
-  const [hotelData, setHotelData] = useState({
-    name: '',
-    type: '',
-    city: '',
-    avatar: '',
-    address: '',
-    title: '',
-    description: '',
-    rating: '',
-    rooms: '',
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setHotelData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleAddHotel = () => {
-    onAddHotel(hotelData);
-    onClose();
-  };
-
-  return (
-    <Modal open={isOpen} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          p: 2,
-        }}
-      >
-        <h2>Add new Hotel</h2>
-        <TextField
-          label="Name"
-          name="name"
-          value={hotelData.name}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-
-        />
-        <TextField
-          label="Type"
-          name="type"
-          value={hotelData.type}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-
-        />
-        <TextField
-          label="City"
-          name="city"
-          value={hotelData.city}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-
-        />
-         <TextField
-          label="Address"
-          name="address"
-          value={hotelData.address}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-        />
-         <TextField
-          label="Photos"
-          name="photo"
-          value={hotelData.photo}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-
-        />
-        {/* <TextField
-          label="Title"
-          name="title"
-          value={hotelData.title}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          /> */}
-        <TextField
-          label="Price"
-          name="price"
-          value={hotelData.price}
-          onChange={handleInputChange}
-          fullWidth
-          style={{ marginBottom: '16px' }} // Add margin bottom for a gap
-          />
-            <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleAddHotel}
-          style={{ marginLeft: '8px' }}
-        >
-          Add New Hotel
-        </Button>
-        {/* Close Button */}
-        <Button variant="contained" style= {{ position: 'absolute', top: "91%", right: 11}} onClick={onClose}>
-          Close
-        </Button>
-
-        {/* Add Hotel Button */}
-      
-      </Box>
-    </Modal>
-  );
-};
+  Typography,
+} from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
+import { data } from "./HotelData"; // Import data from your generated file
+import axios from "axios";
 
 const Hotels = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    city: "",
+    address: "",
+    distance: "",
+    rating: "",
+    cheapestPrice: "",
+    featured: false,
+    type: "",
+    title: "",
+    desc: "",
+  });
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      city: "",
+      address: "",
+      distance: "",
+      rating: "",
+      cheapestPrice: "",
+      featured: false,
+      type: "",
+      title: "",
+      desc: "",
+    });
+  };
+  const handleChange = (event) => {
+    const { name, value, type } = event.target;
+    // For checkbox, handle value as boolean
+    const newValue = type === "checkbox" ? event.target.checked : value;
+    setFormData({ ...formData, [name]: newValue });
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = async () => {
+    await axios
+      .post("http://localhost:8000/api/hotel/", formData)
+      .then((res) => {
+        console.log("data", res.data);
+      });
+    resetForm();
+    setIsModalOpen(false);
+  };
+
   const columns = useMemo(
     () => [
       {
-        id: 'hotels',
-        header: 'Hotels',
+        id: "hotels",
+        header: "Hotels",
         columns: [
           {
-            accessorFn: (row) => row.hotelName,
-            id: 'hotelName',
-            header: 'Hotel Name',
+            accessorFn: (row) => row.name,
+            id: "name",
+            header: "Name",
             size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
                 }}
               >
                 <img
-                  alt="hotel-photo"
-                  height={30}
-                  src={row.original.photo}
+                  alt="avatar"
+                  height={50}
+                  src={row.original.photos[0]}
                   loading="lazy"
-                  style={{ borderRadius: '50%' }}
+                  style={{ border: "2px solid teal", borderRadius: "5px" }}
                 />
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: "hotelType",
-            header: "Type",
-            size: 50,
-          },
-          {
-            accessorKey: 'city',
-            enableClickToCopy: true,
-            filterVariant: 'autocomplete',
-            header: 'City',
-            size: 150,
-          },
-          
-          {
-            accessorKey: 'photo',
-            header: 'Photo',
-            Cell: ({ row }) => (
-              <img
-                alt="avatar"
-                height={50}
-                src={row.original.avatar}
-                loading="lazy"
-                style={{ borderRadius: '5px' }}
-              />
-            ),
-          },
-          {
-            accessorKey: 'rating',
-            header: 'rating',
+            accessorKey: "city",
+            header: "City",
             size: 150,
           },
           {
-            accessorKey: "nightlyRate",
-            header: "Rent",
-            size: 50,
+            accessorKey: "address",
+            header: "Address",
+            size: 150,
+          },
+          // {
+          //   accessorKey: "distance",
+          //   header: "Distance",
+          //   size: 150,
+          // },
+          {
+            accessorKey: "rating",
+            header: "Rating",
+            size: 150,
           },
           {
-            accessorKey: 'rooms',
-            header: 'Rooms',
-            size: 100,
+            accessorKey: "cheapestPrice",
+            header: "Cheapest Price",
+            size: 150,
           },
+          // {
+          //   accessorKey: "featured",
+          //   header: "Featured",
+          //   size: 150,
+          // },
         ],
       },
     ],
@@ -225,58 +146,58 @@ const Hotels = () => {
       showColumnFilters: false,
       showGlobalFilter: true,
       columnPinning: {
-        left: ['mrt-row-expand', 'mrt-row-select'],
-        right: ['mrt-row-actions'],
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
       },
     },
-    paginationDisplayMode: 'pages',
-    positionToolbarAlertBanner: 'bottom',
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
     muiSearchTextFieldProps: {
-      size: 'small',
-      variant: 'outlined',
+      size: "small",
+      variant: "outlined",
     },
     muiPaginationProps: {
-      color: 'secondary',
+      color: "secondary",
       rowsPerPageOptions: [5, 10, 15, 20, 25, 30],
-      shape: 'rounded',
-      variant: 'outlined',
+      shape: "rounded",
+      variant: "outlined",
     },
     renderDetailPanel: ({ row }) => (
       <Box
         sx={{
-          alignItems: 'center',
-          display: 'flex',
-          justifyContent: 'space-around',
-          left: '30px',
-          maxWidth: '1000px',
-          position: 'sticky',
-          width: '100%',
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "16px",
+          textAlign: "center",
+          maxWidth: "100%",
         }}
       >
         <img
           alt="avatar"
-          height={180}
-          src={row.original.avatar}
+          src={row.original.photos[0]}
           loading="lazy"
-          style={{ borderRadius: '50%' }}
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+            border: "2px solid teal",
+            borderRadius: "5px",
+            marginBottom: "16px",
+          }}
         />
-        <Box sx={{ marginLeft: '20px' }}>
-          <div>
-            <strong>Description:</strong> {row.original.description}
-          </div>
-          {/* <div>
-            <strong>Rating:</strong> {row.original.rating}
-          </div> */}
-        </Box>
+        <Typography variant="h5" sx={{ marginBottom: "8px" }}>
+          {row.original.title}
+        </Typography>
+        <Typography variant="body1">{row.original.desc}</Typography>
       </Box>
     ),
+
     renderRowActionMenuItems: ({ closeMenu, table }) => [
       <MenuItem
         key="edit"
         onClick={() => {
-          console.log('Edit Clicked');
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.editRow(row.id));
+          // Edit logic...
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -290,11 +211,7 @@ const Hotels = () => {
         key="delete"
         onClick={() => {
           const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => {
-            // Perform the desired action, e.g., deleting the row
-            table.deleteRow(row.id);
-          });
-          // Close the menu after performing the action
+          selectedRows.forEach((row) => table.deleteRow(row.id));
           closeMenu();
         }}
         sx={{ m: 0 }}
@@ -307,45 +224,155 @@ const Hotels = () => {
     ],
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleAddHotel = (hotelData) => {
-    // Add your logic for handling the create action with hotelData
-    console.log('Create Clicked with data:', hotelData);
-    // Close the modal after handling the action
-    handleCloseModal();
-  };
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ mb: 2, textAlign: 'right' }}>
-        {/* Create button */}
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleOpenModal}
-        >
-          Add new Hotel
+    <>
+      <Box mb={2} textAlign="right">
+        <Button variant="contained" color="primary" onClick={handleModalOpen}>
+          ADD NEW+
         </Button>
       </Box>
       <MaterialReactTable table={table} />
 
-      {/* Add Hotel Modal */}
-      <AddHotelModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onAddHotel={handleAddHotel}
-      />
-    </Box>
+      {/* New Hotels Form */}
+      <Modal open={isModalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            width: 400,
+            maxWidth: "90%",
+            maxHeight: "90%",
+            overflowY: "auto",
+          }}
+        >
+          <form>
+            <Typography variant="h5">Add New Booking</Typography>
+            <TextField
+              variant="standard"
+              label="Name"
+              fullWidth
+              margin="normal"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="City"
+              fullWidth
+              margin="normal"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Address"
+              fullWidth
+              margin="normal"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Distance"
+              fullWidth
+              margin="normal"
+              name="distance"
+              value={formData.distance}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Rating"
+              fullWidth
+              margin="normal"
+              name="rating"
+              value={formData.rating}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Cheapest Price"
+              fullWidth
+              margin="normal"
+              name="cheapestPrice"
+              value={formData.cheapestPrice}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Featured"
+              fullWidth
+              margin="normal"
+              name="featured"
+              value={formData.featured}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Type"
+              fullWidth
+              margin="normal"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Title"
+              fullWidth
+              margin="normal"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Description"
+              fullWidth
+              margin="normal"
+              name="desc"
+              value={formData.desc}
+              onChange={handleChange}
+            />
+            {/* Other fields */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  resetForm();
+                  setIsModalOpen(false);
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleModalClose}
+              >
+                Add Booking
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
+    </>
   );
 };
 

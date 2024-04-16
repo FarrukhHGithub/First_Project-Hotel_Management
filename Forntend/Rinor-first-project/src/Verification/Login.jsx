@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom';
 import { Grid, Box, TextField, Button, Modal, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Validation schema using Yup
@@ -13,11 +17,7 @@ const LoginForm = () => {
     username: Yup.string().required('Username is required'),
     email: Yup.string().email('Invalid email').required('Email is required'),
     password: Yup.string()
-  .min(8, 'Password must be at least 8 characters')
-  .matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-    'Password must contain at least one uppercase letter, one lowercase letter, and one of this (!@#$%^&*)'
-  )
+  .min(6, 'Password must be at least 6 characters')
   .required('Password is required'),
   });
 
@@ -31,8 +31,18 @@ const LoginForm = () => {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: (values) => {
-      setIsModalOpen(true);
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/auth/login",
+          values
+        );
+        console.log(response.data);
+        resetForm();
+        navigate('/');  // Navigate to the dashboard or any other route after successful login
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
   });
 
