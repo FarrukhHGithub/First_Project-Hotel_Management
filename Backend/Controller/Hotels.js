@@ -13,7 +13,7 @@ export const createHotel = async (req, res, next) => {
       try {
         // const photos = req.files.map((file) => file.path);
         // console.log("Uploaded photos:", photos);
-        console.log("Request Body : ", req.body);
+        // console.log("Request Body : ", req.body);
 
         const newHotel = new Hotel({
           ...req.body,
@@ -65,7 +65,7 @@ export const getHotel = async (req, res, next) => {
 };
 
 export const getHotels = async (req, res, next) => {
-  console.log("Request Queries", req.query);
+  // console.log("Request Queries", req.query);
   const { min, max, ...others } = req.query;
 
   try {
