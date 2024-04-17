@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -14,11 +14,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { data } from "./HotelData"; // Import data from your generated file
+// import { data } from "./HotelsData";
 import axios from "axios";
 
 const Hotels = () => {
-  const [formData, setFormData] = useState({
+  const [hotelList, setHotelList] = useState([]);
+  const [hotelData, setHotelData] = useState({
     name: "",
     city: "",
     address: "",
@@ -30,8 +31,9 @@ const Hotels = () => {
     title: "",
     desc: "",
   });
+
   const resetForm = () => {
-    setFormData({
+    setHotelData({
       name: "",
       city: "",
       address: "",
@@ -46,25 +48,77 @@ const Hotels = () => {
   };
   const handleChange = (event) => {
     const { name, value, type } = event.target;
-    // For checkbox, handle value as boolean
     const newValue = type === "checkbox" ? event.target.checked : value;
-    setFormData({ ...formData, [name]: newValue });
+    setHotelData({ ...hotelData, [name]: newValue });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
+  const fetchHotelData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/hotel/hotels"
+      );
+      console.log("Hotels", response.data);
+      setHotelList(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleModalClose = async () => {
-    await axios
-      .post("http://localhost:8000/api/hotel/", formData)
-      .then((res) => {
-        console.log("data", res.data);
-      });
+    await axios.post("http://localhost:8000/api/hotel/", hotelData);
+
     resetForm();
     setIsModalOpen(false);
   };
+  let handleDelete = async (id) => {
+    // console.log("id", id);
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete the data?"
+      );
+      if (confirmDelete) {
+        await axios.delete(`http://localhost:8000/api/hotel/${id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    let fetchDataById = async (id) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/hotel/${id}`
+        );
+        return response.data; // Return the fetched data
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  };
+  let handleUpdate = async (id) => {
+    try {
+      const confirmUpdate = window.confirm(
+        "Are you sure you want to update the data?"
+      );
+      if (confirmUpdate) {
+        const newData = await fetchDataById(id); // Fetch specific data for the ID
+        // Populate the form fields or update the state with the fetched data
+        populateForm(newData);
+
+        // Assuming you want to refresh the data after updating
+        // You can fetch the updated data here or reload the page
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHotelData();
+  }, [hotelList]);
 
   const columns = useMemo(
     () => [
@@ -118,7 +172,7 @@ const Hotels = () => {
           },
           {
             accessorKey: "cheapestPrice",
-            header: "Cheapest Price",
+            header: "Cheapest Price ($)",
             size: 150,
           },
           // {
@@ -134,7 +188,7 @@ const Hotels = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: hotelList,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -142,6 +196,7 @@ const Hotels = () => {
     enableFacetedValues: true,
     enableRowActions: true,
     enableRowSelection: true,
+    getRowId: (row) => row.id,
     initialState: {
       showColumnFilters: false,
       showGlobalFilter: true,
@@ -193,26 +248,26 @@ const Hotels = () => {
       </Box>
     ),
 
-    renderRowActionMenuItems: ({ closeMenu, table }) => [
+    renderRowActionMenuItems: (params) => [
       <MenuItem
-        key="edit"
+        key="Update"
         onClick={() => {
-          // Edit logic...
-          closeMenu();
+          handleUpdate(params.row.original._id);
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
         <ListItemIcon>
           <Edit />
         </ListItemIcon>
-        Edit
+        update
       </MenuItem>,
       <MenuItem
         key="delete"
         onClick={() => {
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.deleteRow(row.id));
-          closeMenu();
+          handleDelete(params.row.original._id);
+
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -258,7 +313,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="name"
-              value={formData.name}
+              value={hotelData.name}
               onChange={handleChange}
             />
             <TextField
@@ -267,7 +322,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="city"
-              value={formData.city}
+              value={hotelData.city}
               onChange={handleChange}
             />
             <TextField
@@ -276,7 +331,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="address"
-              value={formData.address}
+              value={hotelData.address}
               onChange={handleChange}
             />
             <TextField
@@ -285,7 +340,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="distance"
-              value={formData.distance}
+              value={hotelData.distance}
               onChange={handleChange}
             />
             <TextField
@@ -294,7 +349,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="rating"
-              value={formData.rating}
+              value={hotelData.rating}
               onChange={handleChange}
             />
             <TextField
@@ -303,7 +358,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="cheapestPrice"
-              value={formData.cheapestPrice}
+              value={hotelData.cheapestPrice}
               onChange={handleChange}
             />
             <TextField
@@ -312,7 +367,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="featured"
-              value={formData.featured}
+              value={hotelData.featured}
               onChange={handleChange}
             />
             <TextField
@@ -321,7 +376,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="type"
-              value={formData.type}
+              value={hotelData.type}
               onChange={handleChange}
             />
             <TextField
@@ -330,7 +385,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="title"
-              value={formData.title}
+              value={hotelData.title}
               onChange={handleChange}
             />
             <TextField
@@ -339,7 +394,7 @@ const Hotels = () => {
               fullWidth
               margin="normal"
               name="desc"
-              value={formData.desc}
+              value={hotelData.desc}
               onChange={handleChange}
             />
             {/* Other fields */}
