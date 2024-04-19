@@ -16,9 +16,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-// import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Button from "@mui/material/Button";
-// import InboxIcon from '@mui/icons-material/MoveToInbox';
 import Person4Icon from "@mui/icons-material/Person4";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HotelIcon from "@mui/icons-material/Hotel";
@@ -33,7 +31,8 @@ import Booking from "./Hotel_Management/Bookings/Booking";
 import LogoImage from "./assets/logo.png";
 import LoginForm from "./Verification/Login";
 import RegisterForm from "./Verification/Register";
-
+import Singlehotel from "./Hotel_Management/Hotels/SingleHotel"
+/////<<<<<<<<<<<<<< Various Imports >>>>>>>>>>>>>>/////
 const drawerWidth = 240;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -75,11 +74,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: "flex-end",
 }));
-
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -198,14 +195,13 @@ export default function PersistentDrawerLeft() {
               <DrawerHeader />
               <Routes>
                 <Route path="/Dashboard" element={<Dashboard />} />
-                {/* <Route path="/Chart" component={<Chart/>} /> */}
                 <Route path="/user" element={<User />} />
                 <Route path="/hotels" element={<Hotels />} />
                 <Route path="/rooms" element={<Rooms />} />
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/login" element={<LoginForm />} />
-
                 <Route path="/register" element={<RegisterForm />} />
+                <Route path='/hotel/:id' element={<Singlehotel />} />
               </Routes>
             </Main>
           </Box>

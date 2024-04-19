@@ -13,11 +13,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Edit, Delete, } from "@mui/icons-material";
-// import { data } from "./HotelsData";
+import { Edit, Delete, Visibility } from "@mui/icons-material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const Hotels = () => {
+const hotels = () => {
+  const Navigate = useNavigate();
   const [hotelList, setHotelList] = useState([]);
   const [id, setId] = useState("");
   const [hotelData, setHotelData] = useState({
@@ -243,31 +244,26 @@ const Hotels = () => {
     ),
 
     renderRowActionMenuItems: (params) => [
-      // <MenuItem
-      //   key="View"
-      //   onClick={() => {
-      //     setHotelData(
-      //       hotelList.find((item) => item._id === params.row.original._id)
-      //     )
-      //     setId(params.row.original._id)
-      //     setIsModalOpen(true);
-
-      //     params.closeMenu();
-      //   }}
-      //   sx={{ m: 0 }}
-      // >
-      //   <ListItemIcon>
-      //     <VisibilityIcon/>
-      //   </ListItemIcon>
-      //   View
-      // </MenuItem>,
       <MenuItem
-        key="Update"
+        key="view"
+        onClick={() => {
+          Navigate(`/hotel/${params.row.original._id}`);
+          params.closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <Visibility />
+        </ListItemIcon>
+        View
+      </MenuItem>,
+      <MenuItem
+        key="edit"
         onClick={() => {
           setHotelData(
             hotelList.find((item) => item._id === params.row.original._id)
-          )
-          setId(params.row.original._id)
+          );
+          setId(params.row.original._id);
           setIsModalOpen(true);
 
           params.closeMenu();
@@ -447,4 +443,4 @@ const Hotels = () => {
   );
 };
 
-export default Hotels;
+export default hotels;
