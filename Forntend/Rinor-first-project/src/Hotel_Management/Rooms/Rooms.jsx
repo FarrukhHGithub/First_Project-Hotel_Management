@@ -1,97 +1,164 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
 import {
   Box,
-  Button,
   ListItemIcon,
   MenuItem,
+  Button,
   Modal,
   TextField,
   Typography,
 } from "@mui/material";
-import { data } from "./roomData";
-import { Delete, Edit } from "@mui/icons-material";
+import { Edit, Delete, Visibility } from "@mui/icons-material";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Rooms = () => {
+  const Navigate = useNavigate();
+  const [roomList, setroomList] = useState([]);
+  const [id, setId] = useState("");
+  const [roomData, setroomData] = useState({
+    title: "",
+    price: "",
+    maxPeople: "",
+    desc: "",
+    // rating: "",
+    // cheapestPrice: "",
+    // featured: false,
+    // type: "",
+    // title: "",
+    // desc: "",
+  });
+
+  const resetForm = () => {
+    setroomData({
+      title: "",
+      price: "",
+      maxPeople: "",
+      desc: "",
+      // rating: "",
+    });
+  };
+  const handleChange = (event) => {
+    const { name, value, type } = event.target;
+    const newValue = type === "checkbox" ? event.target.checked : value;
+    setroomData({ ...roomData, [name]: newValue });
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+  const fetchroomData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/room"
+      );
+      setroomList(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
+
+  const handleModalClose = async () => {
+    if (id === "") {
+      //  const {id, ...data}=roomData
+      await axios.post("http://localhost:8000/api/room/", roomData);
+
+      resetForm();
+      setIsModalOpen(false);
+    } else {
+      // console.log("id", id);
+      handleUpdate(id);
+    }
+  };
+  const handleUpdate = async (id) => {
+    try {
+      console.log("id", id);
+
+      await axios
+        .put(`http://localhost:8000/api/room/${id}`, roomData)
+        .then(() => {
+          resetForm();
+          setId("");
+          setIsModalOpen(false);
+        });
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  let handleDelete = async (id) => {
+    // console.log("id", id);
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete the data?"
+      );
+      if (confirmDelete) {
+        await axios.delete(`http://localhost:8000/api/room/${id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchroomData();
+  }, [roomList]);
 
   const columns = useMemo(
     () => [
       {
-        id: "avatar",
-        header: "Image",
-        size: 50,
-        Cell: ({ row }) => (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img
-              alt="room"
-              height={100}
-              src={row.original.avatar}
-              loading="lazy"
-              style={{ borderRadius: "5px" }}
-            />
-          </Box>
-        ),
-      },
-      {
         id: "rooms",
-        header: "All Rooms",
+        header: "rooms",
         columns: [
           {
-            accessorFn: (row) => row.id,
-            id: "id",
-            header: "#",
-            size: 50,
-          },
-          {
-            accessorKey: "roomType",
-            header: "Type",
-            size: 50,
-          },
-          {
-            accessorKey: "bedType",
-            header: "Bed",
-            size: 50,
-          },
-          {
-            accessorKey: "nightlyRate",
-            header: "Rent",
-            size: 50,
-          },
-          {
-            accessorKey: "isBooked",
-            header: "Status",
-            size: 100,
-            Cell: ({ cell }) => (
+            accessorKey: "title",
+            id: "title",
+            header: "title",
+            size: 200,
+            Cell: ({ renderedCellValue, row }) => (
               <Box
-                component="span"
-                sx={(theme) => ({
-                  backgroundColor: cell.getValue()
-                    ? theme.palette.success.main
-                    : theme.palette.warning.main,
-                  color: "#fff",
-                  borderRadius: "0.25rem",
-                  padding: "0.25rem",
-                  fontWeight: "500",
-                })}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
               >
-                {cell.getValue() ? "Available" : "Booked"}{" "}
-                {/* Updated logic to display Paid or Unpaid */}
+                <img
+                  alt="avatar"
+                  height={50}
+                  src={row.original.photos[0]}
+                  loading="lazy"
+                  style={{ border: "2px solid teal", borderRadius: "5px" }}
+                />
+                <span>{renderedCellValue}</span>
               </Box>
             ),
+          },
+          {
+            accessorKey: "price",
+            header: "price",
+            size: 150,
+          },
+          {
+            accessorKey: "maxPeople",
+            header: "maxPeople",
+            size: 150,
+          },
+          // {
+          //   accessorKey: "rating",
+          //   header: "Rating",
+          //   size: 150,
+          // },
+          {
+            accessorKey: "desc",
+            header: "desc",
+            size: 150,
           },
         ],
       },
@@ -101,7 +168,7 @@ const Rooms = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: roomList,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -109,6 +176,7 @@ const Rooms = () => {
     enableFacetedValues: true,
     enableRowActions: true,
     enableRowSelection: true,
+    getRowId: (row) => row.id,
     initialState: {
       showColumnFilters: false,
       showGlobalFilter: true,
@@ -134,28 +202,56 @@ const Rooms = () => {
         sx={{
           alignItems: "center",
           display: "flex",
-          justifyContent: "space-around",
-          left: "30px",
-          maxWidth: "1000px",
-          position: "sticky",
-          width: "100%",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "16px",
+          textAlign: "center",
+          maxWidth: "100%",
         }}
       >
         <img
-          alt="room"
-          height={300}
-          src={row.original.avatar}
+          alt="avatar"
+          src={row.original.photos[0]}
           loading="lazy"
-          style={{ borderRadius: "5px" }}
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+            border: "2px solid teal",
+            borderRadius: "5px",
+            marginBottom: "16px",
+          }}
         />
+        <Typography variant="h5" sx={{ marginBottom: "8px" }}>
+          {row.original.title}
+        </Typography>
+        <Typography variant="body1">{row.original.desc}</Typography>
       </Box>
     ),
-    renderRowActionMenuItems: ({ closeMenu, table }) => [
+
+    renderRowActionMenuItems: (params) => [
+      <MenuItem
+        key="view"
+        onClick={() => {
+          Navigate(`/room/${params.row.original._id}`);
+          params.closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <Visibility />
+        </ListItemIcon>
+        View
+      </MenuItem>,
       <MenuItem
         key="edit"
         onClick={() => {
-          // Edit logic...
-          closeMenu();
+          setroomData(
+            roomList.find((item) => item._id === params.row.original._id)
+          );
+          setId(params.row.original._id);
+          setIsModalOpen(true);
+
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -167,9 +263,8 @@ const Rooms = () => {
       <MenuItem
         key="delete"
         onClick={() => {
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.deleteRow(row.id));
-          closeMenu();
+          handleDelete(params.row.original._id);
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -190,7 +285,7 @@ const Rooms = () => {
       </Box>
       <MaterialReactTable table={table} />
 
-      {/* New Room Form */}
+      {/* New rooms Form */}
       <Modal open={isModalOpen} onClose={handleModalClose}>
         <Box
           sx={{
@@ -208,40 +303,77 @@ const Rooms = () => {
           }}
         >
           <form>
-            <Typography variant="h5">Add New Room</Typography>
+            <Typography variant="h5">Add New room</Typography>
             <TextField
               variant="standard"
-              label="Type"
+              label="Title"
               fullWidth
               margin="normal"
+              name="title"
+              value={roomData.title}
+              onChange={handleChange}
+            />
+            {/* <TextField
+              variant="standard"
+              label="Rating"
+              fullWidth
+              margin="normal"
+              name="rating"
+              value={roomData.rating}
+              onChange={handleChange}
+            /> */}
+            <TextField
+              variant="standard"
+              label=" Price"
+              fullWidth
+              margin="normal"
+              name="price"
+              value={roomData.price}
+              onChange={handleChange}
             />
             <TextField
               variant="standard"
-              label="Bed"
+              label="Max-People"
               fullWidth
               margin="normal"
+              name="maxPeople"
+              value={roomData.maxPeople}
+              onChange={handleChange}
             />
             <TextField
               variant="standard"
-              label="Rent(in dollars)"
+              label="Description"
               fullWidth
               margin="normal"
+              name="desc"
+              value={roomData.desc}
+              onChange={handleChange}
             />
-               <Button
-          variant="contained"
-          color="primary"
-          onClick={handleModalClose}
-          style={{ position: 'absolute', top: "81%", right: 10}}
-        >
-          Close
-        </Button>
-            <Box mt={2}>
+            {/* Other fields */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  resetForm();
+                  setIsModalOpen(false);
+                }}
+              >
+                Close
+              </Button>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleModalClose}
               >
-                Add Room
+                {id === "" ? "Add room" : "Update room"}
               </Button>
             </Box>
           </form>
