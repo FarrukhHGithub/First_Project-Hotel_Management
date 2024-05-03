@@ -14,6 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
+
+
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +24,7 @@ const Rooms = () => {
   const Navigate = useNavigate();
   const [roomList, setroomList] = useState([]);
   const [id, setId] = useState("");
+  const [hotelId, sethotelid] = useState("");
   const [roomData, setroomData] = useState({
     title: "",
     price: "",
@@ -64,10 +68,10 @@ const Rooms = () => {
     }
   };
 
-  const handleModalClose = async () => {
+  const handleModalClose = async (hotelid) => {
     if (id === "") {
       //  const {id, ...data}=roomData
-      await axios.post("http://localhost:8000/api/room/", roomData);
+      await axios.post(`http://localhost:8000/api/room/${hotelid}`, roomData);
 
       resetForm();
       setIsModalOpen(false);
@@ -80,9 +84,8 @@ const Rooms = () => {
     try {
       console.log("id", id);
 
-      await axios
-        .put(`http://localhost:8000/api/room/${id}`, roomData)
-        .then(() => {
+      await axios.put(`http://localhost:8000/api/room/${id}`, roomData)
+      .then(() => {
           resetForm();
           setId("");
           setIsModalOpen(false);
@@ -92,23 +95,23 @@ const Rooms = () => {
     }
   };
 
-  let handleDelete = async (id) => {
-    // console.log("id", id);
+  const handleDelete = async (id, hotelid) => {
     try {
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete the data?"
-      );
+      const confirmDelete = window.confirm("Are you sure you want to delete the data?");
       if (confirmDelete) {
-        await axios.delete(`http://localhost:8000/api/room/${id}`);
+        await axios.delete(`http://localhost:8000/api/room/${id}/${hotelid}`);
+        console.log("Room deleted successfully");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error deleting room:", error);
     }
   };
 
   useEffect(() => {
     fetchroomData();
+    sethotelid("");
   }, [roomList]);
+  
 
   const columns = useMemo(
     () => [
@@ -176,7 +179,8 @@ const Rooms = () => {
     enableFacetedValues: true,
     enableRowActions: true,
     enableRowSelection: true,
-    getRowId: (row) => row.id,
+    getRowId: (row) => `${row.id}-${row.hotelid}`,
+    // getRowId: (row) => row.hotelid,
     initialState: {
       showColumnFilters: false,
       showGlobalFilter: true,
@@ -263,7 +267,7 @@ const Rooms = () => {
       <MenuItem
         key="delete"
         onClick={() => {
-          handleDelete(params.row.original._id);
+          handleDelete(params.row.original._id, params.row.original.hotelid); // Pass both id and hotelId
           params.closeMenu();
         }}
         sx={{ m: 0 }}
