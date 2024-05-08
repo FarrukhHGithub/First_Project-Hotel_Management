@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -11,8 +10,10 @@ import {
   Modal,
   TextField,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import { data } from './bookingData';
+// import { Edit, Delete } from '@mui/icons-material';
+// import { data } from './bookingData';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Bookings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,7 @@ const Bookings = () => {
   const [hotelId, setHotelId] = useState('');
   const [arrive, setArrive] = useState('');
   const [depart, setDepart] = useState('');
+  const [bookingList, setBookingList] = useState([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -29,10 +31,34 @@ const Bookings = () => {
     setIsModalOpen(false);
   };
 
-  const handleAddNew = () => {
-    // Logic to handle adding new booking
-    closeModal();
+  const handleAddNew = async () => {
+    try {
+      await axios.post("http://localhost:8000/api/booking/", {
+        roomId,
+        hotelId,
+        arrive,
+        depart
+      });
+      // Assuming successful addition, fetch updated data
+      fetchBookingData();
+      closeModal();
+    } catch (error) {
+      console.error("Error adding new booking:", error);
+    }
   };
+
+  const fetchBookingData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/booking/list");
+      setBookingList(response.data);
+    } catch (error) {
+      console.error("Error fetching booking data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookingData();
+  }, [bookingList]);
 
   const columns = [
     {
@@ -71,7 +97,7 @@ const Bookings = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: bookingList,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -230,3 +256,7 @@ const Bookings = () => {
 };
 
 export default Bookings;
+
+
+
+
