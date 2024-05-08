@@ -7,6 +7,8 @@ import usersRoute from "./Routes/user.routes.js";
 import authRoute from "./Routes/AuthRoutes.js";
 import HotelRoute from "./Routes/hotel.routes.js";
 import roomRoute from "./Routes/room.routes.js";
+import bookingRoute from "./Routes/booking.routes.js";
+
 
 const app = express();
 
@@ -55,6 +57,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/hotel", HotelRoute);
 app.use("/api/room", roomRoute);
+app.use("/api/booking", bookingRoute);
 app.listen(port, () => {
   DatabaseConnection();
   console.log(`Server Listen on port ${port}`);
