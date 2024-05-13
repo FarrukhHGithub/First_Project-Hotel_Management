@@ -14,77 +14,98 @@ import {
   Typography,
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
+// import { data } from "./HotelsData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Checkbox, FormControlLabel } from "@mui/material";
 
-const User = () => {
+const Hotels = () => {
   const Navigate = useNavigate();
-  const [userList, setuserList] = useState([]);
+  const [hotelList, setHotelList] = useState([]);
   const [id, setId] = useState("");
-  const [userData, setuserData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
-    email: "",
-    isAdmin: true,
+  const [hotelData, setHotelData] = useState({
+    name: "",
+    city: "",
+    address: "",
+    distance: "",
+    rating: "",
+    cheapestPrice: "",
+    featured: false,
+    type: "",
+    title: "",
+    desc: "",
   });
 
   const resetForm = () => {
-    setuserData({
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      isAdmin: true,
+    setHotelData({
+      name: "",
+      city: "",
+      address: "",
+      distance: "",
+      rating: "",
+      cheapestPrice: "",
+      featured: false,
+      type: "",
+      title: "",
+      desc: "",
     });
   };
   const handleChange = (event) => {
     const { name, value, type } = event.target;
-    const newValue = type === "checkbox" ? event.target.checked : value;
-    setuserData({ ...userData, [name]: newValue });
+    const newValue =
+      type === "checkbox"
+        ? event.target.checked
+        : type === "file"
+        ? event.target.files[0] // Get the file object from the event
+        : value;
+    setHotelData({ ...hotelData, [name]: newValue });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
-  const fetchuserData = async () => {
+  const fetchHotelData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/users");
-      setuserList(response.data);
+      const response = await axios.get(
+        "http://localhost:8000/api/hotel/hotels"
+      );
+      console.log("data", response.data);
+      response.data.map(
+        (data) => (data.photos = `http://localhost:8000/${data.photos}`)
+      );
+      setHotelList(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  const handleUpdateUser = async () => {
-    // Update parameter name to avoid confusion
-    try {
-      if (id === "") {
-        const formData = new FormData();
-        Object.entries(userData).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
-        await axios.put("http://localhost:8000/api/user/", formData);
-        resetForm();
-        setIsModalOpen(false);
-      } else {
-        // Call the correct function handleUpdate instead of handleUpdateUser
-        await handleUpdate(id);
-      }
-    } catch (error) {
-      console.error("Error updating user:", error);
+
+  const handleCreateHotel = async () => {
+    if (id === "") {
+      const formData = new FormData();
+      Object.entries(hotelData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      //  const {id, ...data}=hotelData
+      await axios.post("http://localhost:8000/api/hotel/", formData);
+
+      resetForm();
+      setIsModalOpen(false);
+    } else {
+      // console.log("id", id);
+      await handleUpdate(id);
     }
   };
   const handleUpdate = async (id) => {
     try {
       console.log("id", id);
 
-      await axios.put(`http://localhost:8000/api/users/${id}`,userData).then(() => {
-        resetForm();
-        setId("");
-        setIsModalOpen(false);
-      });
+      await axios
+        .put(`http://localhost:8000/api/hotel/${id}`, hotelData)
+        .then(() => {
+          resetForm();
+          setId("");
+          setIsModalOpen(false);
+        });
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -97,7 +118,7 @@ const User = () => {
         "Are you sure you want to delete the data?"
       );
       if (confirmDelete) {
-        await axios.delete(`http://localhost:8000/api/users/${id}`);
+        await axios.delete(`http://localhost:8000/api/hotel/${id}`);
       }
     } catch (error) {
       console.log(error);
@@ -105,19 +126,19 @@ const User = () => {
   };
 
   useEffect(() => {
-    fetchuserData();
-  }, [userList]);
+    fetchHotelData();
+  }, []);
 
   const columns = useMemo(
     () => [
       {
-        id: "Users-Identities",
-        header: "Users-Identities",
+        id: "hotels",
+        header: "Hotels",
         columns: [
           {
-            accessorKey: "firstName",
-            id: "firstName",
-            header: "First Name",
+            accessorFn: (row) => row.name,
+            id: "name",
+            header: "Name",
             size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
@@ -127,43 +148,48 @@ const User = () => {
                   gap: "1rem",
                 }}
               >
-                {row.original.photos && ( // Check if photos data exists
-                  <img
-                    alt="avatar"
-                    height={50}
-                    src={row.original.photos} // Assuming photos is a URL
-                    loading="lazy"
-                    style={{
-                      border: "2px solid teal",
-                      borderRadius: "5px",
-                    }}
-                  />
-                )}
+                {}
+                <img
+                  alt="avatar"
+                  height={50}
+                  src={row.original.photos}
+                  loading="lazy"
+                  style={{ border: "2px solid teal", borderRadius: "5px" }}
+                />
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: "lastName",
-            header: "Last Name",
+            accessorKey: "city",
+            header: "City",
             size: 150,
           },
           {
-            accessorKey: "username",
-            header: "Username",
+            accessorKey: "address",
+            header: "Address",
+            size: 150,
+          },
+          // {
+          //   accessorKey: "distance",
+          //   header: "Distance",
+          //   size: 150,
+          // },
+          {
+            accessorKey: "rating",
+            header: "Rating",
             size: 150,
           },
           {
-            accessorKey: "email",
-            header: "Email",
+            accessorKey: "cheapestPrice",
+            header: "Cheapest Price ($)",
             size: 150,
           },
-          {
-            accessorFn: (row) => (row.isAdmin ? "Yes" : "No"),
-            id: "isAdmin",
-            header: "isAdmin",
-            size: 150,
-          },
+          // {
+          //   accessorKey: "featured",
+          //   header: "Featured",
+          //   size: 150,
+          // },
         ],
       },
     ],
@@ -172,7 +198,7 @@ const User = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: userList,
+    data: hotelList,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -236,7 +262,7 @@ const User = () => {
       <MenuItem
         key="view"
         onClick={() => {
-          Navigate(`/user/${params.row.original._id}`);
+          Navigate(`/hotel/${params.row.original._id}`);
           params.closeMenu();
         }}
         sx={{ m: 0 }}
@@ -249,12 +275,11 @@ const User = () => {
       <MenuItem
         key="edit"
         onClick={() => {
-          setuserData(
-            userList.find((item) => item._id === params.row.original._id)
+          setHotelData(
+            hotelList.find((item) => item._id === params.row.original._id)
           );
           setId(params.row.original._id);
-          // setIsModalOpen(true);
-          handleModalOpen();
+          setIsModalOpen(true);
 
           params.closeMenu();
         }}
@@ -284,14 +309,14 @@ const User = () => {
   return (
     <>
       <Box mb={2} textAlign="right">
-        {/* <Button variant="contained" color="primary" onClick={handleModalOpen}>
+        <Button variant="contained" color="primary" onClick={handleModalOpen}>
           ADD NEW+
-        </Button> */}
+        </Button>
       </Box>
       <MaterialReactTable table={table} />
 
       {/* New Hotels Form */}
-      <Modal open={isModalOpen} onClose={handleUpdateUser}>
+      <Modal open={isModalOpen} onClose={handleCreateHotel}>
         <Box
           sx={{
             position: "absolute",
@@ -308,71 +333,100 @@ const User = () => {
           }}
         >
           <form>
-            <Typography variant="h5">Update User</Typography>
+            <Typography variant="h5">Add New Hotel</Typography>
             <TextField
               variant="standard"
-              label="firstName"
+              label="Name"
               fullWidth
               margin="normal"
-              name="firstName"
-              value={userData.firstName}
+              name="name"
+              value={hotelData.name}
               onChange={handleChange}
             />
             <TextField
               variant="standard"
-              label="lastName"
+              label="City"
               fullWidth
               margin="normal"
-              name="lastName"
-              value={userData.lastName}
+              name="city"
+              value={hotelData.city}
               onChange={handleChange}
             />
             <TextField
               variant="standard"
-              label="username"
+              label="Address"
               fullWidth
               margin="normal"
-              name="username"
-              value={userData.username}
+              name="address"
+              value={hotelData.address}
               onChange={handleChange}
             />
             <TextField
               variant="standard"
-              label="Email"
+              label="Distance"
               fullWidth
               margin="normal"
-              name="email"
-              value={userData.email}
+              name="distance"
+              value={hotelData.distance}
               onChange={handleChange}
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={userData.isAdmin}
-                  onChange={handleChange}
-                  name="isAdmin"
-                />
-              }
-              label="Yes"
+            <TextField
+              variant="standard"
+              label="Rating"
+              fullWidth
+              margin="normal"
+              name="rating"
+              value={hotelData.rating}
+              onChange={handleChange}
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={!userData.isAdmin}
-                  onChange={(e) =>
-                    handleChange({
-                      ...e,
-                      target: { name: "isAdmin", value: !userData.isAdmin },
-                    })
-                  }
-                  name="isAdmin"
-                />
-              }
-              label="No"
+            <TextField
+              variant="standard"
+              label="Cheapest Price"
+              fullWidth
+              margin="normal"
+              name="cheapestPrice"
+              value={hotelData.cheapestPrice}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Featured"
+              fullWidth
+              margin="normal"
+              name="featured"
+              value={hotelData.featured}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Type"
+              fullWidth
+              margin="normal"
+              name="type"
+              value={hotelData.type}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Title"
+              fullWidth
+              margin="normal"
+              name="title"
+              value={hotelData.title}
+              onChange={handleChange}
+            />
+            <TextField
+              variant="standard"
+              label="Description"
+              fullWidth
+              margin="normal"
+              name="desc"
+              value={hotelData.desc}
+              onChange={handleChange}
             />
             <input type="file" name="photos" onChange={handleChange} />
 
-            {/* Other TextField components */}
+            {/* Other fields */}
             <Box
               sx={{
                 display: "flex",
@@ -394,9 +448,9 @@ const User = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleUpdateUser}
+                onClick={handleCreateHotel}
               >
-                {id === "" ? "Add Hotel" : "Update User"}
+                {id === "" ? "Add Hotel" : "Update Hotel"}
               </Button>
             </Box>
           </form>
@@ -406,4 +460,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Hotels;
