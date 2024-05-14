@@ -1,9 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+// MRT Imports
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+
 import {
   Box,
   ListItemIcon,
@@ -12,79 +15,79 @@ import {
   Modal,
   TextField,
   Typography,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
+
+// Icons Imports
 import { Edit, Delete, Visibility } from "@mui/icons-material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Checkbox, FormControlLabel } from "@mui/material";
+
+// Users Data
+// import { data } from "./usersData";
 
 const User = () => {
   const Navigate = useNavigate();
-  const [userList, setuserList] = useState([]);
+  const [userList, setUserList] = useState([]);
   const [id, setId] = useState("");
-  const [userData, setuserData] = useState({
+  const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
-    username: "",
     email: "",
+    password: "",
     isAdmin: true,
   });
 
-  const resetForm = () => {
-    setuserData({
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      isAdmin: true,
-    });
-  };
   const handleChange = (event) => {
     const { name, value, type } = event.target;
-    const newValue = type === "checkbox" ? event.target.checked : value;
-    setuserData({ ...userData, [name]: newValue });
+    const newValue =
+      type === "checkbox"
+        ? event.target.checked
+        : type === "file"
+        ? event.target.files[0]
+        : value;
+    setUserData({ ...userData, [name]: newValue });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-  const fetchuserData = async () => {
+  // const handleModalOpen = () => {
+  //   setIsModalOpen(true);
+  // };
+
+  const fetchUsersData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/users");
-      setuserList(response.data);
+      const response = await axios.get("http://localhost:8000/api/users/");
+      console.log("data:", response.data);
+      response.data.users.map(
+        (user) => (user.photo = `http://localhost:8000/${user.photo}`)
+      );
+      setUserList(response.data.users);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
   const handleUpdateUser = async () => {
-    // Update parameter name to avoid confusion
-    try {
-      if (id === "") {
-        const formData = new FormData();
-        Object.entries(userData).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
-        await axios.put("http://localhost:8000/api/user/", formData);
-        resetForm();
-        setIsModalOpen(false);
-      } else {
-        // Call the correct function handleUpdate instead of handleUpdateUser
-        await handleUpdate(id);
-      }
-    } catch (error) {
-      console.error("Error updating user:", error);
+    if (id) {
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      await axios.put(`http://localhost:8000/api/users/${id}`, formData);
     }
+
+    setIsModalOpen(false);
   };
+
   const handleUpdate = async (id) => {
     try {
       console.log("id", id);
-
-      await axios.put(`http://localhost:8000/api/users/${id}`,userData).then(() => {
-        resetForm();
-        setId("");
-        setIsModalOpen(false);
-      });
+      await axios
+        .put(`http://localhost:8000/api/users/${id}`, userData)
+        .then(() => {
+          setId("");
+          setIsModalOpen(false);
+        });
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -105,19 +108,19 @@ const User = () => {
   };
 
   useEffect(() => {
-    fetchuserData();
-  }, [userList]);
+    fetchUsersData();
+  }, []);
 
   const columns = useMemo(
     () => [
       {
-        id: "Users-Identities",
-        header: "Users-Identities",
+        id: "users", // id used to define `group` column
+        header: "Users",
         columns: [
           {
-            accessorKey: "firstName",
-            id: "firstName",
-            header: "First Name",
+            accessorFn: (row) => `${row.firstName} ${row.lastName}`, // accessorFn used to join multiple data into a single cell
+            id: "name", // id is still required when using accessorFn instead of accessorKey
+            header: "Name",
             size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <Box
@@ -127,42 +130,46 @@ const User = () => {
                   gap: "1rem",
                 }}
               >
-                {row.original.photos && ( // Check if photos data exists
-                  <img
-                    alt="avatar"
-                    height={50}
-                    src={row.original.photos} // Assuming photos is a URL
-                    loading="lazy"
-                    style={{
-                      border: "2px solid teal",
-                      borderRadius: "5px",
-                    }}
-                  />
-                )}
+                <img
+                  alt="avatar"
+                  height={50}
+                  src={row.original.photo}
+                  loading="lazy"
+                  style={{ border: "2px solid teal", borderRadius: "50%" }}
+                />
+                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
               </Box>
             ),
           },
           {
-            accessorKey: "lastName",
-            header: "Last Name",
-            size: 150,
-          },
-          {
-            accessorKey: "username",
-            header: "Username",
-            size: 150,
-          },
-          {
             accessorKey: "email",
+            enableClickToCopy: true,
+            filterVariant: "autocomplete",
             header: "Email",
-            size: 150,
+            size: 300,
           },
           {
-            accessorFn: (row) => (row.isAdmin ? "Yes" : "No"),
-            id: "isAdmin",
-            header: "isAdmin",
-            size: 150,
+            accessorKey: "isAdmin",
+            // accessorFn: (row) => (row.isAdmin ? "Yes" : "No"),
+            header: "IsAdmin",
+            size: 50,
+            Cell: ({ cell }) => (
+              <Box
+                component="span"
+                sx={(theme) => ({
+                  backgroundColor: cell.getValue()
+                    ? theme.palette.success.main
+                    : theme.palette.error.main,
+                  color: "#fff",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  fontWeight: "bold",
+                })}
+              >
+                {cell.getValue() ? "Yes" : "No"}
+              </Box>
+            ),
           },
         ],
       },
@@ -206,32 +213,22 @@ const User = () => {
         sx={{
           alignItems: "center",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "16px",
-          textAlign: "center",
-          maxWidth: "100%",
+          justifyContent: "space-around",
+          left: "30px",
+          maxWidth: "1000px",
+          position: "sticky",
+          width: "100%",
         }}
       >
         <img
           alt="avatar"
+          height={150}
           src={row.original.photos}
           loading="lazy"
-          style={{
-            maxWidth: "100%",
-            height: "auto",
-            border: "2px solid teal",
-            borderRadius: "5px",
-            marginBottom: "16px",
-          }}
+          style={{ border: "5px solid teal", borderRadius: "50%" }}
         />
-        <Typography variant="h5" sx={{ marginBottom: "8px" }}>
-          {row.original.title}
-        </Typography>
-        <Typography variant="body1">{row.original.desc}</Typography>
       </Box>
     ),
-
     renderRowActionMenuItems: (params) => [
       <MenuItem
         key="view"
@@ -246,15 +243,15 @@ const User = () => {
         </ListItemIcon>
         View
       </MenuItem>,
+
       <MenuItem
         key="edit"
         onClick={() => {
-          setuserData(
+          setUserData(
             userList.find((item) => item._id === params.row.original._id)
           );
           setId(params.row.original._id);
-          // setIsModalOpen(true);
-          handleModalOpen();
+          setIsModalOpen(true);
 
           params.closeMenu();
         }}
@@ -265,6 +262,7 @@ const User = () => {
         </ListItemIcon>
         Edit
       </MenuItem>,
+
       <MenuItem
         key="delete"
         onClick={() => {
@@ -283,14 +281,7 @@ const User = () => {
 
   return (
     <>
-      <Box mb={2} textAlign="right">
-        {/* <Button variant="contained" color="primary" onClick={handleModalOpen}>
-          ADD NEW+
-        </Button> */}
-      </Box>
-      <MaterialReactTable table={table} />
-
-      {/* New Hotels Form */}
+      <MaterialReactTable table={table} />;{/* User Form */}
       <Modal open={isModalOpen} onClose={handleUpdateUser}>
         <Box
           sx={{
@@ -311,7 +302,7 @@ const User = () => {
             <Typography variant="h5">Update User</Typography>
             <TextField
               variant="standard"
-              label="firstName"
+              label="First Name"
               fullWidth
               margin="normal"
               name="firstName"
@@ -320,22 +311,14 @@ const User = () => {
             />
             <TextField
               variant="standard"
-              label="lastName"
+              label="Last Name"
               fullWidth
               margin="normal"
               name="lastName"
               value={userData.lastName}
               onChange={handleChange}
             />
-            <TextField
-              variant="standard"
-              label="username"
-              fullWidth
-              margin="normal"
-              name="username"
-              value={userData.username}
-              onChange={handleChange}
-            />
+
             <TextField
               variant="standard"
               label="Email"
@@ -345,6 +328,14 @@ const User = () => {
               value={userData.email}
               onChange={handleChange}
             />
+
+            <input
+              style={{ display: "block" }}
+              type="file"
+              name="photos"
+              onChange={handleChange}
+            />
+
             <FormControlLabel
               control={
                 <Checkbox
@@ -370,9 +361,7 @@ const User = () => {
               }
               label="No"
             />
-            <input type="file" name="photos" onChange={handleChange} />
 
-            {/* Other TextField components */}
             <Box
               sx={{
                 display: "flex",
@@ -385,7 +374,6 @@ const User = () => {
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  resetForm();
                   setIsModalOpen(false);
                 }}
               >
@@ -396,7 +384,7 @@ const User = () => {
                 color="primary"
                 onClick={handleUpdateUser}
               >
-                {id === "" ? "Add Hotel" : "Update User"}
+                Update User
               </Button>
             </Box>
           </form>
@@ -405,5 +393,4 @@ const User = () => {
     </>
   );
 };
-
 export default User;
