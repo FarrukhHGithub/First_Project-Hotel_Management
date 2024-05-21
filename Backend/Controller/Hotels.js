@@ -1,5 +1,5 @@
 import Hotel from "../Model/hotelModel.js";
-import upload from "../utils/multer.js";
+import upload from "../Utils/multer.js";
 
 export const createHotel = async (req, res, next) => {
   console.log("body", { ...req.body });
@@ -34,6 +34,7 @@ export const createHotel = async (req, res, next) => {
     next(err);
   }
 };
+
 export const updateHotel = async (req, res, next) => {
   console.log("Request Body ", req.body);
   console.log("Request file ", req.file);
@@ -59,7 +60,7 @@ export const deleteHotel = async (req, res, next) => {
 };
 export const getHotel = async (req, res, next) => {
   try {
-    const hotel = await Hotel.findById(req.params.id);
+    const hotel = await Hotel.findById(req.params.id).populate("rooms");
     res.status(200).json(hotel);
   } catch (err) {
     next(err);
@@ -73,6 +74,8 @@ export const getHotels = async (req, res, next) => {
     const hotels = await Hotel.find().populate("rooms").limit(req.query.limit);
 
     // const HOTELS = await Hotel.find();
+    console.log("Hotel List",hotels)
+
     res.status(200).json(hotels);
   } catch (err) {
     next(err);
@@ -125,6 +128,7 @@ export const countByType = async (req, res, next) => {
 };
 
 export const getHotelRooms = async (req, res, next) => {
+  
   try {
     const hotel = await Hotel.findById(req.params.id);
     const list = await Promise.all(
@@ -132,6 +136,7 @@ export const getHotelRooms = async (req, res, next) => {
         return room.findById(room);
       })
     );
+    console.log("Hotel List",list)
     res.status(200).json(list);
   } catch (err) {
     next(err);

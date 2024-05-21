@@ -9,7 +9,6 @@ import HotelRoute from "./Routes/hotel.routes.js";
 import roomRoute from "./Routes/room.routes.js";
 import bookingRoute from "./Routes/booking.routes.js";
 
-
 const app = express();
 
 dotenv.config();
