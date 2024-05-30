@@ -1,91 +1,89 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useMemo } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useMemo } from "react";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
 import {
   Box,
+  Button,
   ListItemIcon,
   MenuItem,
-  Button,
   Modal,
   TextField,
+  FormControlLabel,
+  Checkbox,
   Typography,
 } from "@mui/material";
+// import { data } from "./RoomsData";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
-
-
-
+// import { data } from "./HotelsData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Rooms = () => {
+const Room = ({ hotelId, rooms }) => {
   const Navigate = useNavigate();
-  const [roomList, setroomList] = useState([]);
+  const [roomList, setRoomList] = useState([]);
   const [id, setId] = useState("");
-  const [hotelId, sethotelid] = useState("");
-  const [roomData, setroomData] = useState({
+  const [roomData, setRoomData] = useState({
     title: "",
+    photos: null,
     price: "",
+    bed: "",
     maxPeople: "",
+    status: false,
     desc: "",
-    // rating: "",
-    // cheapestPrice: "",
-    // featured: false,
-    // type: "",
-    // title: "",
-    // desc: "",
   });
-
   const resetForm = () => {
-    setroomData({
+    setRoomData({
       title: "",
+      photos: null,
       price: "",
+      bed: "",
       maxPeople: "",
+      status: false,
       desc: "",
-      // rating: "",
     });
   };
-  const handleChange = (event) => {
-    const { name, value, type } = event.target;
-    const newValue = type === "checkbox" ? event.target.checked : value;
-    setroomData({ ...roomData, [name]: newValue });
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-  const fetchroomData = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8000/api/room"
-      );
-      setroomList(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const handleChange = (event) => {
+  //   const { name, value, type } = event.target;
+  //   const newValue =
+  //     type === "checkbox"
+  //       ? event.target.checked
+  //       : type === "file"
+  //       ? event.target.files[0]
+  //       : value;
+  //   setRoomData({ ...roomData, [name]: newValue });
+  // };
 
-  const handleModalClose = async (hotelid) => {
+  const handleCreateRoom = async (e) => {
+    e.preventDefault();
     if (id === "") {
-      //  const {id, ...data}=roomData
-      await axios.post(`http://localhost:8000/api/room/${hotelid}`, roomData);
-
+      const formData = new FormData();
+      Object.entries(roomData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      //  const {id, ...data}=hotelData
+      await axios
+        .post(`http://localhost:8000/api/room/${hotelId}`, formData)
+        .then((res) => console.log("reponse", res.data));
       resetForm();
       setIsModalOpen(false);
     } else {
       // console.log("id", id);
-      handleUpdate(id);
+      await handleUpdate(id);
     }
   };
+
   const handleUpdate = async (id) => {
     try {
       console.log("id", id);
 
-      await axios.put(`http://localhost:8000/api/room/${id}`, roomData)
-      .then(() => {
+      await axios
+        .put(`http://localhost:8000/api/room/${id}`, roomData)
+        .then(() => {
           resetForm();
           setId("");
           setIsModalOpen(false);
@@ -95,73 +93,91 @@ const Rooms = () => {
     }
   };
 
-  const handleDelete = async (id, hotelid) => {
-    try {
-      const confirmDelete = window.confirm("Are you sure you want to delete the data?");
-      if (confirmDelete) {
-        await axios.delete(`http://localhost:8000/api/room/${id}/${hotelid}`);
-        console.log("Room deleted successfully");
-      }
-    } catch (error) {
-      console.error("Error deleting room:", error);
-    }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
   };
 
-  useEffect(() => {
-    fetchroomData();
-    sethotelid("");
-  }, [roomList]);
-  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setRoomData((prevData) => ({
+      ...prevData,
+      [name]:
+        type === "file" ? files[0] : type === "checkbox" ? checked : value,
+    }));
+  };
 
   const columns = useMemo(
     () => [
       {
         id: "rooms",
-        header: "rooms",
+        header: "All Rooms",
         columns: [
           {
-            accessorKey: "title",
-            id: "title",
-            header: "title",
-            size: 200,
-            Cell: ({ renderedCellValue, row }) => (
+            accessorKey: "titleAndPhotos",
+            header: "Title & Photos",
+            size: 50,
+            Cell: ({ row }) => (
               <Box
                 sx={{
                   display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
                   alignItems: "center",
-                  gap: "1rem",
                 }}
               >
                 <img
-                  alt="avatar"
+                  alt="room"
                   height={50}
-                  src={row.original.photos[0]}
+                  src={`http://localhost:8000/${row.original.photos}`}
                   loading="lazy"
                   style={{ border: "2px solid teal", borderRadius: "5px" }}
                 />
-                <span>{renderedCellValue}</span>
+                <div>{row.original.title}</div>
               </Box>
             ),
           },
           {
-            accessorKey: "price",
-            header: "price",
-            size: 150,
+            accessorKey: "bed",
+            header: "Bed",
+            size: 50,
           },
           {
             accessorKey: "maxPeople",
-            header: "maxPeople",
-            size: 150,
+            header: "Capacity",
+            size: 50,
           },
-          // {
-          //   accessorKey: "rating",
-          //   header: "Rating",
-          //   size: 150,
-          // },
           {
-            accessorKey: "desc",
-            header: "desc",
-            size: 150,
+            accessorKey: "price",
+            header: "Price",
+            size: 50,
+          },
+          {
+            accessorKey: "status",
+            header: "Status",
+            size: 100,
+            Cell: ({ cell }) => (
+              <Box
+                component="span"
+                sx={(theme) => ({
+                  backgroundColor: !cell.getValue()
+                    ? theme.palette.success.main
+                    : theme.palette.warning.main,
+                  color: "#fff",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  fontWeight: "500",
+                })}
+              >
+                {!cell.getValue() ? "Available" : "Booked"}{" "}
+                {/* Updated logic to display Paid or Unpaid */}
+              </Box>
+            ),
           },
         ],
       },
@@ -171,7 +187,18 @@ const Rooms = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: roomList,
+    data: rooms
+      ? rooms
+      : {
+          title: "",
+          photos: null,
+          price: "",
+          bed: "",
+          maxPeople: "",
+          status: false,
+          desc: "",
+        },
+
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableGrouping: true,
@@ -179,8 +206,6 @@ const Rooms = () => {
     enableFacetedValues: true,
     enableRowActions: true,
     enableRowSelection: true,
-    getRowId: (row) => `${row.id}-${row.hotelid}`,
-    // getRowId: (row) => row.hotelid,
     initialState: {
       showColumnFilters: false,
       showGlobalFilter: true,
@@ -206,56 +231,28 @@ const Rooms = () => {
         sx={{
           alignItems: "center",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "16px",
-          textAlign: "center",
-          maxWidth: "100%",
+          justifyContent: "space-around",
+          left: "30px",
+          maxWidth: "1000px",
+          position: "sticky",
+          width: "100%",
         }}
       >
         <img
-          alt="avatar"
-          src={row.original.photos[0]}
+          alt="room"
+          height={300}
+          src={row.original.avatar}
           loading="lazy"
-          style={{
-            maxWidth: "100%",
-            height: "auto",
-            border: "2px solid teal",
-            borderRadius: "5px",
-            marginBottom: "16px",
-          }}
+          style={{ border: "5px solid teal", borderRadius: "5px" }}
         />
-        <Typography variant="h5" sx={{ marginBottom: "8px" }}>
-          {row.original.title}
-        </Typography>
-        <Typography variant="body1">{row.original.desc}</Typography>
       </Box>
     ),
-
-    renderRowActionMenuItems: (params) => [
-      <MenuItem
-        key="view"
-        onClick={() => {
-          Navigate(`/room/${params.row.original._id}`);
-          params.closeMenu();
-        }}
-        sx={{ m: 0 }}
-      >
-        <ListItemIcon>
-          <Visibility />
-        </ListItemIcon>
-        View
-      </MenuItem>,
+    renderRowActionMenuItems: ({ closeMenu, table }) => [
       <MenuItem
         key="edit"
         onClick={() => {
-          setroomData(
-            roomList.find((item) => item._id === params.row.original._id)
-          );
-          setId(params.row.original._id);
-          setIsModalOpen(true);
-
-          params.closeMenu();
+          // Edit logic...
+          closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -267,8 +264,9 @@ const Rooms = () => {
       <MenuItem
         key="delete"
         onClick={() => {
-          handleDelete(params.row.original._id, params.row.original.hotelid); // Pass both id and hotelId
-          params.closeMenu();
+          const selectedRows = table.getSelectedRowModel().flatRows;
+          selectedRows.forEach((row) => table.deleteRow(row.id));
+          closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -289,7 +287,7 @@ const Rooms = () => {
       </Box>
       <MaterialReactTable table={table} />
 
-      {/* New rooms Form */}
+      {/* New Room Form */}
       <Modal open={isModalOpen} onClose={handleModalClose}>
         <Box
           sx={{
@@ -306,78 +304,77 @@ const Rooms = () => {
             overflowY: "auto",
           }}
         >
-          <form>
-            <Typography variant="h5">Add New room</Typography>
+          <form onSubmit={handleCreateRoom}>
+            <Typography variant="h5">Add New Room</Typography>
             <TextField
               variant="standard"
               label="Title"
-              fullWidth
-              margin="normal"
               name="title"
               value={roomData.title}
               onChange={handleChange}
-            />
-            {/* <TextField
-              variant="standard"
-              label="Rating"
               fullWidth
               margin="normal"
-              name="rating"
-              value={roomData.rating}
-              onChange={handleChange}
-            /> */}
+            />
             <TextField
               variant="standard"
-              label=" Price"
+              type="file"
+              label="Photos"
+              name="photos"
+              onChange={handleChange}
               fullWidth
               margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              variant="standard"
+              label="Rent"
               name="price"
               value={roomData.price}
               onChange={handleChange}
+              fullWidth
+              margin="normal"
             />
             <TextField
               variant="standard"
-              label="Max-People"
+              label="Bed"
+              name="bed"
+              value={roomData.bed}
+              onChange={handleChange}
               fullWidth
               margin="normal"
+            />
+            <TextField
+              variant="standard"
+              label="Max People"
               name="maxPeople"
               value={roomData.maxPeople}
               onChange={handleChange}
+              fullWidth
+              margin="normal"
             />
             <TextField
               variant="standard"
               label="Description"
-              fullWidth
-              margin="normal"
               name="desc"
               value={roomData.desc}
               onChange={handleChange}
+              fullWidth
+              margin="normal"
             />
-            {/* Other fields */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "1rem",
-              }}
-            >
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  resetForm();
-                  setIsModalOpen(false);
-                }}
-              >
-                Close
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleModalClose}
-              >
-                {id === "" ? "Add room" : "Update room"}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="status"
+                  checked={roomData.status}
+                  onChange={handleChange}
+                />
+              }
+              label="Status"
+            />
+
+            <Box mt={2}>
+              <Button variant="contained" color="primary" type="submit">
+                Add Room
               </Button>
             </Box>
           </form>
@@ -387,4 +384,4 @@ const Rooms = () => {
   );
 };
 
-export default Rooms;
+export default Room;
