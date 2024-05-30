@@ -16,7 +16,7 @@ const router = express.Router();
 router.post("/", createHotel);
 
 //UPDATE
-router.put("/:id", updateHotel);
+router.put("/:id", upload.single('photos'), updateHotel);
 //DELETE
 router.delete("/:id", deleteHotel);
 //GET

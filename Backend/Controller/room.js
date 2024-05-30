@@ -1,11 +1,10 @@
 import Room from "../Model/roomModel.js";
 import Hotel from "../Model/hotelModel.js";
-// import { createError } from "../utils/Error.js";
 
 export const createRoom = async (req, res, next) => {
   const hotelId = req.params.hotelid;
-  const newRoom = new Room(req.body);
-
+  const photo = req.file
+  const newRoom = new Room({ ...req.body, photos: photo.path ? photo.path : "" });
   try {
     const savedRoom = await newRoom.save();
     try {

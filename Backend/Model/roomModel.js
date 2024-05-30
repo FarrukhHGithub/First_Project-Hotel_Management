@@ -3,19 +3,30 @@ const RoomSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+
+    },
+    photos: {
+      type: String,
+      default: ""
+
     },
     price: {
       type: Number,
-      required: true,
+
+    },
+    bed: {
+      type: Number
     },
     maxPeople: {
       type: Number,
-      required: true,
+
+    },
+    status: {
+      type: Boolean
     },
     desc: {
       type: String,
-      required: true,
+
     },
     // roomNumbers: [{ number: Number, unavailableDates: { type: [Date] } }],
   },
