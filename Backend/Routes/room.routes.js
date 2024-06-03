@@ -7,6 +7,8 @@ import {
   updateRoom,
   updateRoomAvailability,
 } from "../Controller/room.js";
+import upload from "../Utils/multer.js";
+
 // import { verifyAdmin } from "../utils/verifyToken.js";
 
 const router = express.Router();
