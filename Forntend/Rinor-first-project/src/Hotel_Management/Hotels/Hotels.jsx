@@ -66,7 +66,7 @@ const Hotel = () => {
   const fetchHotelData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/hotels/hotel"
+        "http://localhost:8000/api/hotel/hotels"
       );
       console.log("data", response.data);
       response.data.map(

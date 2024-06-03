@@ -21,7 +21,7 @@ const SingleHotel = () => {
   const fetchHotelData = async () => {
     try {
       await axios
-        .get(`http://localhost:8000/api/hotel/Hotel/${params.id}`)
+        .get(`http://localhost:8000/api/hotel/find/${params.id}`)
         .then((res) => {
           console.log("hotelData", res.data);
           setData(res.data);
