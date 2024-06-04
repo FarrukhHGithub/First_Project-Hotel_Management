@@ -8,10 +8,16 @@ import authRoute from "./Routes/AuthRoutes.js";
 import HotelRoute from "./Routes/hotel.routes.js";
 import roomRoute from "./Routes/room.routes.js";
 import bookingRoute from "./Routes/booking.routes.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
 
 const app = express();
+// Serve static files (images)
 
 dotenv.config();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
 // Middlewares
 const corsOptions = {

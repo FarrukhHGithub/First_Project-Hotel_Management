@@ -33,6 +33,8 @@ import LoginForm from "./Verification/Login";
 import RegisterForm from "./Verification/Register";
 import Singlehotel from "./Hotel_Management/Hotels/SingleHotel";
 import SingleUsers from "./Hotel_Management/Users/SingleUsers";
+import RoomDetails from "./Hotel_Management/Rooms/singleRoom.jsx";
+
 /////<<<<<<<<<<<<<< Various Imports >>>>>>>>>>>>>>/////
 const drawerWidth = 240;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -200,6 +202,7 @@ export default function PersistentDrawerLeft() {
                 <Route path="/hotels" element={<Hotels />} />
                 <Route path="/rooms" element={<Rooms />} />
                 <Route path="/booking" element={<Booking />} />
+                <Route path='/room/:hotelId/:roomId' element={<RoomDetails />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/hotel/:id" element={<Singlehotel />} />

@@ -17,7 +17,12 @@ import {
   Typography,
 } from "@mui/material";
 // import { data } from "./RoomsData";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import {
+  Edit,
+  Delete,
+  Visibility,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 // import { data } from "./HotelsData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -247,12 +252,25 @@ const Room = ({ hotelId, rooms }) => {
         />
       </Box>
     ),
-    renderRowActionMenuItems: ({ closeMenu, table }) => [
+    renderRowActionMenuItems: (params) => [
+      <MenuItem
+        key="view"
+        onClick={() => {
+          Navigate(`/room/${hotelId}/${params.row.original._id}`);
+          params.closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <Visibility />
+        </ListItemIcon>
+        View
+      </MenuItem>,
       <MenuItem
         key="edit"
         onClick={() => {
           // Edit logic...
-          closeMenu();
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -264,9 +282,7 @@ const Room = ({ hotelId, rooms }) => {
       <MenuItem
         key="delete"
         onClick={() => {
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.deleteRow(row.id));
-          closeMenu();
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
