@@ -12,7 +12,7 @@ import {
   Modal,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-    
+
 const RoomDetails = () => {
   const { hotelId, roomId } = useParams();
   const [room, setRoom] = useState(null);
@@ -111,9 +111,75 @@ const RoomDetails = () => {
                 Description: {room.desc}
               </Typography>
               {room.unavailableDates && (
-                <Typography variant="h5" component="h3" sx={{ color: "red" }}>
-                  Unavailable Dates: {room.unavailableDates}
-                </Typography>
+                <div>
+                  <Typography
+                    variant="h5"
+                    component="h4"
+                    sx={{ textAlign: "center", fontWeight:"bold" }}
+                  >
+                    Unavailable Dates
+                  </Typography>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-around",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        component="strong"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        From Date
+                      </Typography>
+                      {room.unavailableDates.map((date, i) => (
+                        <span
+                          style={{ color: "red", fontWeight: "bold" }}
+                          key={i}
+                        >
+                          {date.fromDate.split("T")[0]}
+                          <hr />
+                        </span>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        component="strong"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        To Date
+                      </Typography>
+                      {room.unavailableDates.map((date, i) => (
+                        <span
+                          style={{ color: "red", fontWeight: "bold" }}
+                          key={i}
+                        >
+                          {date.toDate.split("T")[0]}
+                          <hr />
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
             </Grid>
             <Grid item xs={12} md={4} sx={{ marginTop: 2 }}>
@@ -156,9 +222,10 @@ const RoomDetails = () => {
                 <TextField
                   size="small"
                   label="Check In"
-                  type="datetime-local"
+                  type="date"
                   name="fromDate"
                   value={formData.fromDate}
+                  defaultValue="2024-01-01"
                   onChange={handleInputChange}
                   InputLabelProps={{ shrink: true }}
                   fullWidth
@@ -167,9 +234,10 @@ const RoomDetails = () => {
                 <TextField
                   size="small"
                   label="Check Out"
-                  type="datetime-local"
+                  type="date"
                   name="toDate"
                   value={formData.toDate}
+                  defaultValue="2024-01-02"
                   onChange={handleInputChange}
                   InputLabelProps={{ shrink: true }}
                   fullWidth

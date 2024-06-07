@@ -16,20 +16,20 @@ import {
   Checkbox,
   Typography,
 } from "@mui/material";
-// import { data } from "./RoomsData";
+
 import {
   Edit,
   Delete,
   Visibility,
   VisibilityOutlined,
 } from "@mui/icons-material";
+
 // import { data } from "./HotelsData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Room = ({ hotelId, rooms }) => {
   const Navigate = useNavigate();
-  const [roomList, setRoomList] = useState([]);
   const [id, setId] = useState("");
   const [roomData, setRoomData] = useState({
     title: "",
@@ -40,6 +40,7 @@ const Room = ({ hotelId, rooms }) => {
     status: false,
     desc: "",
   });
+
   const resetForm = () => {
     setRoomData({
       title: "",
@@ -85,12 +86,18 @@ const Room = ({ hotelId, rooms }) => {
   const handleUpdate = async (id) => {
     try {
       console.log("id", id);
-
+      const formData = new FormData();
+      Object.entries(roomData).forEach(([key, value]) => {
+        if (key !== "rooms") {
+          formData.append(key, value);
+        }
+      });
       await axios
-        .put(`http://localhost:8000/api/room/${id}`, roomData)
-        .then(() => {
+        .put(`http://localhost:8000/api/room/${id}`, formData)
+        .then((res) => {
           resetForm();
           setId("");
+          console.log("res", res);
           setIsModalOpen(false);
         });
     } catch (error) {
@@ -269,7 +276,11 @@ const Room = ({ hotelId, rooms }) => {
       <MenuItem
         key="edit"
         onClick={() => {
-          // Edit logic...
+          setRoomData(
+            rooms.find((item) => item._id === params.row.original._id)
+          );
+          setId(params.row.original._id);
+          setIsModalOpen(true);
           params.closeMenu();
         }}
         sx={{ m: 0 }}
@@ -321,7 +332,9 @@ const Room = ({ hotelId, rooms }) => {
           }}
         >
           <form onSubmit={handleCreateRoom}>
-            <Typography variant="h5">Add New Room</Typography>
+            <Typography variant="h5">
+              {id === "" ? "Add New room" : "Update Current room"}
+            </Typography>
             <TextField
               variant="standard"
               label="Title"
@@ -390,7 +403,7 @@ const Room = ({ hotelId, rooms }) => {
 
             <Box mt={2}>
               <Button variant="contained" color="primary" type="submit">
-                Add Room
+                {id === "" ? "Add room" : "Update room"}
               </Button>
             </Box>
           </form>
