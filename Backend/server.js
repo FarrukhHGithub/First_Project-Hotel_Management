@@ -17,7 +17,7 @@ const app = express();
 
 dotenv.config();
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
+app.use('/Upload', express.static(path.join(__dirname, 'Upload')));
 
 // Middlewares
 const corsOptions = {
