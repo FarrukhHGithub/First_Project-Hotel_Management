@@ -11,11 +11,15 @@ const router = express.Router();
 //Check In
 router.post("/:hotelId/:roomId", createBooking);
 //Booking List
+
 router.get("/list", bookingList);
 // Search Booking By Id
-// router.get("/search/:id", bookingSearch);
+
+
 //Check Out
 router.delete("/checkout/:id", checkOut);
+
+// single booking 
 router.get("/:id", getBooking);
 
 

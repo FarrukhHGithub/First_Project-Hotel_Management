@@ -7,9 +7,8 @@ import {
   updateRoom,
   updateRoomAvailability,
 } from "../Controller/room.js";
+// import { verifyAdmin } from "../Utils/verifyToken.js";
 import upload from "../Utils/multer.js";
-
-// import { verifyAdmin } from "../utils/verifyToken.js";
 
 const router = express.Router();
 //CREATE
@@ -17,7 +16,7 @@ router.post("/:hotelid", upload.single('photos'), createRoom);
 
 //UPDATE
 router.put("/availability/:id", updateRoomAvailability);
-router.put("/:id", updateRoom);
+router.put("/:id", upload.single('photos'), updateRoom);
 //DELETE
 router.delete("/:id/:hotelid", deleteRoom);
 //GET
