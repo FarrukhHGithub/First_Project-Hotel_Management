@@ -1,27 +1,31 @@
 /* eslint-disable react/prop-types */
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
 import axios from "axios";
-import {
-  
-  ListItemIcon,
-  MenuItem,
-  
-} from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import { ListItemIcon, MenuItem } from "@mui/material";
+import { Delete, Visibility } from "@mui/icons-material";
 // import { data } from "./BookingsData";
 
-const Bookings = () => {
+const Booking = () => {
+  const Navigate = useNavigate();
+
   const [booking, setBooking] = useState(null);
 
   const fetchRoom = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/api/booking/`);
       console.log(response);
-      setBooking(response.data);
+      setBooking(
+        response.data.map((data) => ({
+          ...data,
+          fromDate: data.fromDate.split("T")[0],
+          toDate: data.toDate.split("T")[0],
+        }))
+      );
     } catch (err) {
       console.error(err);
     }
@@ -29,6 +33,12 @@ const Bookings = () => {
   useEffect(() => {
     fetchRoom();
   }, []);
+
+  const handleDelete = async (id) => {
+    await axios
+      .delete(`http://localhost:8000/api/booking/${id}`)
+      .then(fetchRoom());
+  };
 
   const columns = useMemo(
     () => [
@@ -89,26 +99,25 @@ const Bookings = () => {
       shape: "rounded",
       variant: "outlined",
     },
-    renderRowActionMenuItems: ({ closeMenu, table }) => [
+    renderRowActionMenuItems: (params) => [
       <MenuItem
-        key="edit"
+        key="view"
         onClick={() => {
-          // Edit logic...
-          closeMenu();
+          Navigate(`/booking/${params.row.original._id}`);
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
         <ListItemIcon>
-          <Edit />
+          <Visibility />
         </ListItemIcon>
-        Edit
+        Veiw
       </MenuItem>,
       <MenuItem
         key="delete"
         onClick={() => {
-          const selectedRows = table.getSelectedRowModel().flatRows;
-          selectedRows.forEach((row) => table.deleteRow(row.id));
-          closeMenu();
+          handleDelete(params.row.original._id);
+          params.closeMenu();
         }}
         sx={{ m: 0 }}
       >
@@ -122,10 +131,9 @@ const Bookings = () => {
 
   return (
     <>
-      
       <MaterialReactTable table={table} />
     </>
   );
 };
 
-export default Bookings;
+export default Booking;
