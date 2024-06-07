@@ -21,10 +21,8 @@ import {
   Edit,
   Delete,
   Visibility,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 
-// import { data } from "./HotelsData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -71,7 +69,6 @@ const Room = ({ hotelId, rooms }) => {
       Object.entries(roomData).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      //  const {id, ...data}=hotelData
       await axios
         .post(`http://localhost:8000/api/room/${hotelId}`, formData)
         .then((res) => console.log("reponse", res.data));
