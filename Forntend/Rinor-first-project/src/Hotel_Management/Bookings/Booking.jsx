@@ -8,7 +8,6 @@ import {
 import axios from "axios";
 import { ListItemIcon, MenuItem } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
-// import { data } from "./BookingsData";
 
 const Booking = () => {
   const Navigate = useNavigate();

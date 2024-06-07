@@ -34,7 +34,7 @@ import RegisterForm from "./Verification/Register";
 import Singlehotel from "./Hotel_Management/Hotels/SingleHotel";
 import SingleUsers from "./Hotel_Management/Users/SingleUsers";
 import RoomDetails from "./Hotel_Management/Rooms/singleRoom.jsx";
-import SingleBooking from "./Hotel_Management/Bookings/singleBooking.jsx";
+import SingleBooking from "./Hotel_Management/Bookings/SingleBooking.jsx";
 
 /////<<<<<<<<<<<<<< Various Imports >>>>>>>>>>>>>>/////
 const drawerWidth = 240;
