@@ -1,0 +1,46 @@
+.room-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .room-image img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .room-info {
+    margin-top: 20px;
+    text-align: left;
+  }
+  
+  .room-facilities {
+    margin-top: 20px;
+  }
+  
+  .booking-section {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .booking-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .booking-section form label {
+    margin-bottom: 10px;
+  }
+  
+  .booking-section button {
+    margin-top: 10px;
+  }
+  
+ 
+  
