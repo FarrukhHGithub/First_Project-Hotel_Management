@@ -8,10 +8,10 @@ import {
   countByCity,
   countByType,
   getHotelRooms,
-} from "../Controller/Hotels.js";
+} from "../Controller/hotel.controller.js";
+import { verifyAdmin } from "../Utils/verifyToken.js";
 import upload from "../Utils/multer.js";
 
-// import { verifyAdmin } from "../utils/verifyToken.js";
 const router = express.Router();
 
 //CREATE
@@ -19,22 +19,23 @@ router.post("/", createHotel);
 
 //UPDATE
 router.put("/:id", upload.single('photos'), updateHotel);
+
 //DELETE
 router.delete("/:id", deleteHotel);
+
 //GET
+router.get("/search/:id", getHotel);
 
-router.get("/find/:id", getHotel);
 //GET ALL
-
 router.get("/hotels", getHotels);
 
-// Count By City
+// CountByCity
 router.get("/countByCity", countByCity);
 
-//Count by Types Of Hotel
+// CountByType
 router.get("/countByType", countByType);
 
-// Get All Hotel rooms
-router.get("/room/:id", getHotelRooms);
+// GetHotelRooms
+router.get("/getHotelRooms", getHotelRooms);
 
 export default router;

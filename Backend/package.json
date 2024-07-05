@@ -1,19 +1,17 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "this is the backend for hotel nanagement system",
+  "description": "backend for Hotel Management system",
+  "main": "express.js",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js"
   },
-  "author": "farrukh hussain",
+  "author": "Jalal Hussain",
   "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^3.1.0"
-  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -23,5 +21,8 @@
     "multer": "^1.4.5-lts.1",
     "path": "^0.12.7",
     "url": "^0.11.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

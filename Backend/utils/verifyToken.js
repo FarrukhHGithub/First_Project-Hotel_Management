@@ -1,24 +1,23 @@
 import jwt from "jsonwebtoken";
-import { createError } from "../utils/Error.js";
+import { createError } from "../Utils/error.js";
 
 export const verifyToken = (req, res, next) => {
-  if (req.cookies.access_token != null) {
-    jwt.verify(
-      req.cookies.access_token,
-      process.env.JWT_SECRET,
-      (err, user) => {
-        if (err) {
-          res.send({ err, message: "you are no authenticated" });
-        }
-        next();
-      }
-    );
-  } else {
-    res.status(401).send({ err, message: "Invalid token" });
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.status(401).send({ message: "Invalid token" });
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(401).send({ message: "You are not authenticated" });
+    }
+    req.user = user;
+    next();
+  });
 };
+
 export const verifyUser = (req, res, next) => {
-  verifyToken(req, res, next, () => {
+  verifyToken(req, res, () => {
     if (req.user.id === req.params.id || req.user.isAdmin) {
       next();
     } else {
@@ -28,7 +27,7 @@ export const verifyUser = (req, res, next) => {
 };
 
 export const verifyAdmin = (req, res, next) => {
-  verifyToken(req, res, next, () => {
+  verifyToken(req, res, () => {
     if (req.user.isAdmin) {
       next();
     } else {
